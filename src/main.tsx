@@ -1,9 +1,64 @@
-import { StrictMode, useEffect, useRef, useState } from "react";
+import {
+  StrictMode,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 import { createRoot } from "react-dom/client";
 import { classes, colors, endings } from "./sounds";
+import rogueIcon from "./assets/wow/rogue.jpg" with { type: "file" };
+import warriorIcon from "./assets/wow/warrior.jpg" with { type: "file" };
+import mageIcon from "./assets/wow/mage.jpg" with { type: "file" };
+import paladinIcon from "./assets/wow/paladin.jpg" with { type: "file" };
+import shamanIcon from "./assets/wow/shaman.jpg" with { type: "file" };
+import warlockIcon from "./assets/wow/warlock.jpg" with { type: "file" };
+import priestIcon from "./assets/wow/priest.jpg" with { type: "file" };
+import druidIcon from "./assets/wow/druid.jpg" with { type: "file" };
+import hunterIcon from "./assets/wow/hunter.jpg" with { type: "file" };
 
 // Extra silence between clips, in milliseconds. Tune here without changing assets.
 const CLIP_GAP_MS = 0;
+
+// Classic class colors; game icons sourced from wow.zamimg.com and bundled locally.
+const wowClasses = {
+  rogue: { label: "Rogue", color: "#FFF569", icon: rogueIcon },
+  warrior: { label: "Warrior", color: "#C79C6E", icon: warriorIcon },
+  mage: { label: "Mage", color: "#69CCF0", icon: mageIcon },
+  paladin: { label: "Paladin", color: "#F58CBA", icon: paladinIcon },
+  shaman: { label: "Shaman", color: "#0070DE", icon: shamanIcon },
+  warlock: { label: "Warlock", color: "#9482C9", icon: warlockIcon },
+  priest: { label: "Priest", color: "#FFFFFF", icon: priestIcon },
+  druid: { label: "Druid", color: "#FF7D0A", icon: druidIcon },
+  hunter: { label: "Hunter", color: "#ABD473", icon: hunterIcon },
+};
+
+// Add one object per person; pair each plain-text name with a reusable class entry.
+const reservations: {
+  name: string;
+  characters: {
+    name: string;
+    wowClass: (typeof wowClasses)[keyof typeof wowClasses];
+    featured?: boolean;
+  }[];
+}[] = [
+  {
+    name: "Gunnar",
+    characters: [
+      { name: "Green Archer", wowClass: wowClasses.hunter, featured: true },
+      { name: "Green Warrior", wowClass: wowClasses.warrior },
+      { name: "Green Wizard", wowClass: wowClasses.warlock },
+    ],
+  },
+  {
+    name: "Jake",
+    characters: [
+      { name: "Red Minotaur", wowClass: wowClasses.druid, featured: true },
+      { name: "Green Scout", wowClass: wowClasses.hunter },
+      { name: "Blue Sorceress", wowClass: wowClasses.mage },
+    ],
+  },
+];
 
 const ICONS: Record<string, string> = {
   sword:
@@ -138,11 +193,55 @@ function App() {
   return (
     <main className="soundboard">
       <header className="phrase-header">
+        <div
+          className="title-crest"
+          data-color={color.swatch}
+          aria-hidden="true"
+        >
+          <PixelIcon name={character.icon} />
+        </div>
         <h1 aria-live="polite" aria-atomic="true">
           <span data-color={color.swatch}>{color.label}</span> {character.label}
           <span className="phrase-ending">{"<Needs Food Badly>"}</span>
         </h1>
       </header>
+
+      <section
+        className="reservations"
+        aria-labelledby="reservations-heading"
+        style={{ "--reservation-count": reservations.length } as CSSProperties}
+      >
+        <header className="reservations-header">
+          <h2 id="reservations-heading">Confirmed Character Reservations</h2>
+          <p className="reservations-subheading">
+            <strong>Planned Mains in Bold</strong>
+          </p>
+        </header>
+        <div className="reservation-grid">
+          {reservations.map(({ name, characters }) => (
+            <article key={name}>
+              <h3>{name}</h3>
+              <ul>
+                {characters.map(({ name, wowClass, featured }) => (
+                  <li
+                    key={name}
+                    className={featured ? "reservation-featured" : undefined}
+                  >
+                    {name} -{" "}
+                    <span
+                      className="wow-class"
+                      style={{ color: wowClass.color }}
+                    >
+                      <img src={wowClass.icon} alt="" width="16" height="16" />
+                      {wowClass.label}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </article>
+          ))}
+        </div>
+      </section>
 
       <fieldset disabled={status !== "idle"}>
         <legend>Color</legend>

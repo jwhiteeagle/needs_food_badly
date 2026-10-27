@@ -57,43 +57,192 @@
 }
 
 .soundboard {
-  width: min(100%, 38rem);
+  width: min(100%, 90rem);
   margin-inline: auto;
   padding: 1.5rem 1rem 0;
   display: grid;
   gap: 1.35rem;
 }
+.phrase-header,
+.reservations-header,
+.reservation-grid article {
+  border: 1px solid rgb(164 172 174 / 0.22);
+  background: rgb(236 236 229 / 0.025);
+}
 .phrase-header {
+  position: relative;
   min-height: 7rem;
+  padding: 1rem 1.25rem 1.2rem;
+  border-color: rgb(198 216 146 / 0.35);
   display: grid;
+  gap: 0.45rem;
   align-items: center;
   text-align: center;
+  box-shadow:
+    inset 0 0 0 4px var(--background),
+    inset 0 0 0 5px rgb(198 216 146 / 0.12),
+    0 4px 0 #0b0d0e;
+}
+.title-crest {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+}
+.title-crest::before,
+.title-crest::after {
+  content: "";
+  width: clamp(2.5rem, 8vw, 6rem);
+  border-top: 2px solid rgb(198 216 146 / 0.3);
+}
+.title-crest .pixel-icon {
+  width: 1.8rem;
+  height: 1.8rem;
+  filter: drop-shadow(2px 2px 0 #0b0d0e);
+}
+.phrase-header::before,
+.phrase-header::after {
+  content: "";
+  position: absolute;
+  width: 0.85rem;
+  height: 0.85rem;
+  border-style: solid;
+  border-color: var(--selected);
+  pointer-events: none;
+}
+.phrase-header::before {
+  top: 0.35rem;
+  left: 0.35rem;
+  border-width: 3px 0 0 3px;
+}
+.phrase-header::after {
+  bottom: 0.35rem;
+  right: 0.35rem;
+  border-width: 0 3px 3px 0;
 }
 h1 {
   margin: 0;
-  font-family: var(--font-serif);
-  font-size: clamp(1.65rem, 6vw, 2.7rem);
-  font-weight: 750;
-  line-height: 1.25;
+  font-family: "VT323", ui-monospace, monospace;
+  font-size: clamp(2.5rem, 7vw, 4.5rem);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: 0.025em;
+  text-shadow: 3px 3px 0 #0b0d0e;
   text-wrap: balance;
 }
 .phrase-ending {
   display: block;
-  margin-top: 0.5rem;
-  font-size: 0.6em;
+  margin-top: 0.45rem;
+  font-size: clamp(1.25rem, 3vw, 1.8rem);
+  line-height: 1.1;
+  letter-spacing: 0.06em;
   color: var(--muted);
 }
-h1 [data-color="red"] {
+.phrase-header [data-color="red"] {
   color: #ff938d;
 }
-h1 [data-color="yellow"] {
+.phrase-header [data-color="yellow"] {
   color: #ead078;
 }
-h1 [data-color="blue"] {
+.phrase-header [data-color="blue"] {
   color: #8fbef3;
 }
-h1 [data-color="green"] {
+.phrase-header [data-color="green"] {
   color: #91d8ac;
+}
+
+.reservations {
+  --reservation-columns: 2;
+  --reservation-gap: 0.5rem;
+  font-family: Cabin, var(--font-sans);
+  color: #c7cdca;
+  margin-block: -0.35rem;
+  text-align: center;
+}
+.reservations-header {
+  /* Match the occupied card columns, including a partially filled row. */
+  width: calc((100% + var(--reservation-gap)) / var(--reservation-columns) * min(var(--reservation-count), var(--reservation-columns)) - var(--reservation-gap));
+  margin-inline: auto;
+  margin-bottom: 0.5rem;
+  padding: 0.4rem 0.7rem;
+}
+.reservations h2 {
+  margin: 0 0 0.2rem;
+  font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+  font-weight: 650;
+  color: var(--foreground);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  line-height: 1.2;
+}
+.reservations-subheading {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.3;
+}
+.reservation-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--reservation-gap);
+}
+.reservation-grid article {
+  flex: 0 1 calc((100% + var(--reservation-gap)) / var(--reservation-columns) - var(--reservation-gap));
+  min-width: 0;
+  padding: 0.55rem 0.45rem;
+  overflow-wrap: anywhere;
+}
+@media (min-width: 40rem) {
+  .reservations {
+    --reservation-columns: 3;
+  }
+}
+@media (min-width: 60rem) {
+  .reservations {
+    --reservation-columns: 4;
+  }
+}
+@media (min-width: 75rem) {
+  .reservations {
+    --reservation-columns: 5;
+  }
+}
+.reservation-grid h3 {
+  margin: 0 0 0.3rem;
+  color: var(--foreground);
+  font-size: 1.125rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: rgb(164 172 174 / 0.5);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  line-height: 1.2;
+}
+.reservation-grid ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9375rem;
+  line-height: 1.35;
+}
+.wow-class {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  vertical-align: baseline;
+  white-space: nowrap;
+  font-weight: 650;
+}
+.wow-class img {
+  flex-shrink: 0;
+}
+.reservation-featured {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+.reservation-featured .wow-class {
+  font-weight: inherit;
 }
 
 fieldset {
@@ -129,6 +278,11 @@ legend {
   margin: -3px;
   scrollbar-color: var(--border) var(--background);
   scrollbar-width: thin;
+}
+@media (min-width: 48rem) {
+  .class-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
 }
 .ending-grid {
   grid-template-columns: repeat(4, minmax(0, 1fr));
