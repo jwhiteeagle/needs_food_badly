@@ -6,8 +6,7 @@ on:
 permissions:
   contents: read
 env:
-  # Enable only when Jake is ready for public launch.
-  PAGES_DEPLOY_ENABLED: "false"
+  PAGES_DEPLOY_ENABLED: "true"
 concurrency:
   group: pages
   cancel-in-progress: false

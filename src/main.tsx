@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { classes, colors, endings } from "./sounds";
 
 // Extra silence between clips, in milliseconds. Tune here without changing assets.
-const CLIP_GAP_MS = 100;
+const CLIP_GAP_MS = 0;
 
 const ICONS: Record<string, string> = {
   sword:
