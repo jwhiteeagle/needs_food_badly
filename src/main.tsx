@@ -1267,9 +1267,6 @@ function App() {
         <section
           className="reservations"
           aria-labelledby="reservations-heading"
-          style={
-            { "--reservation-count": reservations.length } as CSSProperties
-          }
         >
           <header className="section-header reservations-header">
             <h2 id="reservations-heading">Confirmed Character Reservations</h2>

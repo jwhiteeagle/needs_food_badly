@@ -173,13 +173,8 @@ h1 {
   color: #c7cdca;
 }
 .reservations {
-  --reservation-gap: 0.5rem;
   margin-block: -0.35rem;
   text-align: center;
-}
-.reservations-header,
-.reservation-grid {
-  --reservation-columns: 2;
 }
 .section-header {
   margin-bottom: 0.75rem;
@@ -187,12 +182,7 @@ h1 {
   text-align: center;
 }
 .reservations-header {
-  /* Match the occupied card columns, including a partially filled row. */
-  width: calc(
-    (100% + var(--reservation-gap)) / var(--reservation-columns) *
-      min(var(--reservation-count), var(--reservation-columns)) -
-      var(--reservation-gap)
-  );
+  width: 100%;
   margin-inline: auto;
   margin-bottom: 0.5rem;
   padding: 0.4rem 0.7rem;
@@ -215,37 +205,17 @@ h1 {
 }
 .reservation-grid {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--reservation-gap);
+  flex-direction: column;
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+  gap: 0.5rem;
 }
 .reservation-grid article {
-  flex: 0 1
-    calc(
-      (100% + var(--reservation-gap)) / var(--reservation-columns) -
-        var(--reservation-gap)
-    );
+  flex: none;
   min-width: 0;
   padding: 0.55rem 0.45rem;
   overflow-wrap: anywhere;
-}
-@container (min-width: 40rem) {
-  .reservation-grid,
-  .reservations-header {
-    --reservation-columns: 3;
-  }
-}
-@container (min-width: 60rem) {
-  .reservation-grid,
-  .reservations-header {
-    --reservation-columns: 4;
-  }
-}
-@container (min-width: 75rem) {
-  .reservation-grid,
-  .reservations-header {
-    --reservation-columns: 5;
-  }
 }
 .reservation-grid h3 {
   margin: 0 0 0.3rem;
