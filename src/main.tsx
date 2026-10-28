@@ -8,7 +8,6 @@ import {
   useCallback,
   useContext,
   createContext,
-  type CSSProperties,
 } from "react";
 import { createRoot } from "react-dom/client";
 import { classes, colors, endings } from "./sounds";
