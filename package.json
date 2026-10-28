@@ -12,7 +12,7 @@
     "build": "bun scripts/build.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "bun scripts/smoke.ts",
+    "test": "bun test && bun scripts/smoke.ts",
     "format": "prettier --write .",
     "check": "bun run typecheck && bun run lint && bun run build && bun run test"
   },

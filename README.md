@@ -1,13 +1,21 @@
 # Needs Food Badly
 
-Mix a color, a character class, and a voice line to recreate the classic Gauntlet announcer calls.
+> [!Name Reservations]
+>
+> - Confirmed Reserved WoW Forever character names and planned mains
+> - US PvP Horde Ruleset
 
-- Four colors, 36 classes, and four endings
-- One tap to play your custom line
-- Built for phones, ready for desktop
+> [!Gauntlet Announcer Playback]
+>
+> - Original Gauntlet announcer audio
+> - Four colors, 36 character classes, and four voice-line endings
+> - Select a combination and play the assembled callout
 
-> [!TIP]
-> Start with **Red Warrior Needs Food Badly**, then make it your own.
+> [!Cute Pricing Data]
+>
+> - WoW Forever auction prices for US PvP Horde
+> - Gathering-material prices and item lookup by ID
+> - Top crafting margins grouped by profession
+> - Prices from [AHledger](https://ahledger.com), seeded from beta scans until live data arrives
 
-> [!NOTE]
-> An unofficial fan soundboard using original game audio. Not affiliated with or endorsed by the game's rights holders.
+An unofficial fan project. Not affiliated with or endorsed by the games' rights holders.
