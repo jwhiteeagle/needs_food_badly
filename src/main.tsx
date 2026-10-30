@@ -75,16 +75,15 @@ const reservations: {
     name: "Gunnar",
     characters: [
       { name: "Green Archer", wowClass: wowClasses.hunter, featured: true },
-      { name: "Green Warrior", wowClass: wowClasses.warrior },
       { name: "Green Wizard", wowClass: wowClasses.warlock },
     ],
   },
   {
     name: "Jake",
     characters: [
-      { name: "Red Minotaur", wowClass: wowClasses.druid, featured: true },
+      { name: "Green Warrior", wowClass: wowClasses.warrior },
+      { name: "Red Minotaur", wowClass: wowClasses.druid },
       { name: "Green Scout", wowClass: wowClasses.hunter },
-      { name: "Blue Sorceress", wowClass: wowClasses.mage },
     ],
   },
   {
