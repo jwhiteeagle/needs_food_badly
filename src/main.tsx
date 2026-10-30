@@ -95,6 +95,22 @@ const reservations: {
       { name: "Red Mongrel", wowClass: wowClasses.druid },
     ],
   },
+  {
+    name: "Paul",
+    characters: [
+      { name: "Apox Apox", wowClass: wowClasses.hunter, featured: true },
+      { name: "Apocks Apawks", wowClass: wowClasses.rogue },
+      { name: "Aphax Apaewux", wowClass: wowClasses.druid },
+    ],
+  },
+  {
+    name: "Dirk",
+    characters: [
+      { name: "Dirka Dirka", wowClass: wowClasses.druid, featured: true },
+      { name: "Undecided Main", wowClass: wowClasses.paladin },
+      { name: "Notmuch Timetoplay", wowClass: wowClasses.warrior },
+    ],
+  },
 ];
 
 const ICONS: Record<string, string> = {
