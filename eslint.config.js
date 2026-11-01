@@ -6,7 +6,12 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
-    ignores: ["dist/**", ".vscode/**"],
+    ignores: [
+      "dist/**",
+      ".vscode/**",
+      ".sprite-workshop/**",
+      ".sprite-workshop-retired/**",
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,

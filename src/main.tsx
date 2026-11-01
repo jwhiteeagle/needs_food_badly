@@ -11,6 +11,7 @@ import {
 } from "react";
 import { createRoot } from "react-dom/client";
 import { classes, colors, endings } from "./sounds";
+import { HordeSprites } from "./horde-sprites";
 import {
   AH_MARKET,
   GATHER_URL,
@@ -65,8 +66,9 @@ const wowClasses = {
 // Add one object per person; pair each plain-text name with a reusable class entry.
 const reservations: {
   name: string;
+  limitedPlaytime?: boolean;
   characters: {
-    name: string;
+    name?: string;
     wowClass: (typeof wowClasses)[keyof typeof wowClasses];
     featured?: boolean;
   }[];
@@ -81,7 +83,7 @@ const reservations: {
   {
     name: "Jake",
     characters: [
-      { name: "Green Warrior", wowClass: wowClasses.warrior },
+      { name: "Green Warrior", wowClass: wowClasses.warrior, featured: true },
       { name: "Red Minotaur", wowClass: wowClasses.druid },
       { name: "Green Scout", wowClass: wowClasses.hunter },
     ],
@@ -104,13 +106,82 @@ const reservations: {
   },
   {
     name: "Dirk",
-    characters: [
-      { name: "Dirka Dirka", wowClass: wowClasses.druid, featured: true },
-      { name: "Undecided Main", wowClass: wowClasses.paladin },
-      { name: "Notmuch Timetoplay", wowClass: wowClasses.warrior },
-    ],
+    limitedPlaytime: true,
+    characters: [{ wowClass: wowClasses.druid, featured: true }],
+  },
+  {
+    name: "Dave",
+    limitedPlaytime: true,
+    characters: [{ wowClass: wowClasses.hunter, featured: true }],
+  },
+  {
+    name: "Mike",
+    limitedPlaytime: true,
+    characters: [{ wowClass: wowClasses.mage, featured: true }],
+  },
+  {
+    name: "Chris",
+    limitedPlaytime: true,
+    characters: [{ wowClass: wowClasses.druid, featured: true }],
+  },
+  {
+    name: "Drew",
+    limitedPlaytime: true,
+    characters: [{ wowClass: wowClasses.rogue, featured: true }],
+  },
+  {
+    name: "Ben",
+    limitedPlaytime: true,
+    characters: [{ wowClass: wowClasses.shaman, featured: true }],
+  },
+  {
+    name: "Chris",
+    limitedPlaytime: true,
+    characters: [{ wowClass: wowClasses.warlock, featured: true }],
+  },
+  {
+    name: "Evan",
+    limitedPlaytime: true,
+    characters: [{ wowClass: wowClasses.mage, featured: true }],
+  },
+  {
+    name: "Scott",
+    limitedPlaytime: true,
+    characters: [{ wowClass: wowClasses.mage, featured: true }],
   },
 ];
+
+function ReservationGrid({
+  players,
+  heading: Heading = "h3",
+}: {
+  players: typeof reservations;
+  heading?: "h3" | "h4";
+}) {
+  return (
+    <div className="reservation-grid">
+      {players.map(({ name, characters }) => (
+        <article key={name}>
+          <Heading>{name}</Heading>
+          <ul>
+            {characters.map(({ name, wowClass, featured }) => (
+              <li
+                key={name ?? wowClass.label}
+                className={featured ? "reservation-featured" : undefined}
+              >
+                {name}{" "}
+                <span className="wow-class" style={{ color: wowClass.color }}>
+                  <img src={wowClass.icon} alt="" width="16" height="16" />
+                  {wowClass.label}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </article>
+      ))}
+    </div>
+  );
+}
 
 const ICONS: Record<string, string> = {
   sword:
@@ -1275,6 +1346,7 @@ function App() {
           <span data-color={color.swatch}>{color.label}</span> {character.label}
           <span className="phrase-ending">{"<Needs Food Badly>"}</span>
         </h1>
+        <HordeSprites />
       </header>
 
       <div className="widget-grid">
@@ -1288,35 +1360,22 @@ function App() {
               <strong>Planned Mains in Bold</strong>
             </p>
           </header>
-          <div className="reservation-grid">
-            {reservations.map(({ name, characters }) => (
-              <article key={name}>
-                <h3>{name}</h3>
-                <ul>
-                  {characters.map(({ name, wowClass, featured }) => (
-                    <li
-                      key={name}
-                      className={featured ? "reservation-featured" : undefined}
-                    >
-                      {name} -{" "}
-                      <span
-                        className="wow-class"
-                        style={{ color: wowClass.color }}
-                      >
-                        <img
-                          src={wowClass.icon}
-                          alt=""
-                          width="16"
-                          height="16"
-                        />
-                        {wowClass.label}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </article>
-            ))}
-          </div>
+          <ReservationGrid
+            players={reservations.filter((player) => !player.limitedPlaytime)}
+          />
+          <hr className="reservation-divider" />
+          <section aria-labelledby="limited-playtime-heading">
+            <h3
+              id="limited-playtime-heading"
+              className="section-subheading reservation-subtitle"
+            >
+              tirekickers / limited playtime
+            </h3>
+            <ReservationGrid
+              players={reservations.filter((player) => player.limitedPlaytime)}
+              heading="h4"
+            />
+          </section>
         </section>
 
         <section
