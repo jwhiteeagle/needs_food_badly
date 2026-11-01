@@ -15,8 +15,8 @@ const spriteFiles = [
 ];
 assert.equal(
   spriteFiles.length,
-  4,
-  "Expected two raid and two Horde PvP class identity atlases",
+  7,
+  "Expected two dungeon, three raid, and two Horde PvP class identity atlases",
 );
 const spriteDimensions = await Promise.all(
   spriteFiles.map(async (name) => {
@@ -29,7 +29,7 @@ const spriteDimensions = await Promise.all(
 );
 assert.deepEqual(
   spriteDimensions.sort((a, b) => a[0]! - b[0]!),
-  Array.from({ length: 4 }, () => [2304, 256]),
+  Array.from({ length: 7 }, () => [2304, 256]),
   "Expected nine 256px cells in each class identity atlas",
 );
 

@@ -1,6 +1,4 @@
 node_modules/
-.sprite-workshop/
-.sprite-workshop-retired/
 dist/
 coverage/
 *.log
