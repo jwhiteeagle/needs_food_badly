@@ -14,6 +14,7 @@
   --green: #377957;
   --font-sans: Anaheim, ui-sans-serif, sans-serif, system-ui;
   --font-serif: Merriweather, ui-serif, serif;
+  --market-card-max-width: 20rem;
   color-scheme: dark;
   background: var(--background);
   color: var(--foreground);
@@ -252,14 +253,25 @@
   text-align: center;
 }
 .market-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 0.6rem;
 }
+/* Center sparse rows without stretching a few cards across the whole page */
+.market-grid > .market-item {
+  flex: 1 1 15rem;
+  width: 100%;
+  max-width: var(--market-card-max-width);
+}
 .market-grid.pinned-grid {
+  display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  justify-items: center;
 }
 .item-lookup {
+  width: min(100%, 40rem);
+  margin-inline: auto;
   padding-inline: clamp(0.25rem, 1vw, 0.75rem);
   margin-bottom: 0.75rem;
 }
@@ -359,13 +371,54 @@
 .market-item dd[data-negative="true"] {
   color: #ffaaa8;
 }
-.profession-list {
-  display: grid;
-  gap: 1rem;
+.craft-margins {
+  min-width: 0;
+  border-top: 1px solid rgb(164 172 174 / 0.3);
+  padding-top: 1rem;
+  container: craft-margins / inline-size;
 }
-.market-card-section-headed.profession-section {
+.craft-margins-header {
+  text-align: center;
+}
+.craft-margins-header > .section-subheading {
+  margin-bottom: 0.5rem;
+}
+.profession-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  justify-items: center;
+  gap: 1.25rem;
+}
+@container craft-margins (min-width: 64rem) {
+  .profession-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+/* One block owns its header and cards; the width ceiling is cards plus intervening gaps */
+.market-card-section-headed.card-block {
+  --card-block-columns: 3;
+  --card-block-min-width: 10rem;
+  --card-block-gap: 0.4rem;
+  width: min(
+    100%,
+    calc(
+      var(--card-block-columns) * var(--market-card-max-width) +
+        (var(--card-block-columns) - 1) * var(--card-block-gap)
+    )
+  );
+  min-width: 0;
   margin: 0;
   padding: 0;
+  container-type: inline-size;
+}
+.card-block > .market-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(min(100%, var(--card-block-min-width)), 1fr)
+  );
+  gap: var(--card-block-gap);
 }
 .profession-divider {
   margin-bottom: 0.5rem;
@@ -428,10 +481,6 @@
 .market-item .craft-sales dd {
   margin: 0;
 }
-.profession-cards {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.4rem;
-}
 .profession-cards .market-item {
   padding: 0.5rem 0.35rem;
 }
@@ -478,7 +527,8 @@
   padding-inline: clamp(0.25rem, 1vw, 0.75rem);
   margin-block: 0.75rem 1rem;
 }
-.market-card-section-headed > h3 {
+.market-card-section-headed > h3,
+.craft-margins-header > h3 {
   margin: 0 0 0.2rem;
   text-align: center;
   color: var(--foreground);
@@ -489,6 +539,9 @@
 }
 .market-card-section-headed > .section-subheading {
   margin-bottom: 0.5rem;
+}
+#pinned-items-heading {
+  font-size: 1.5rem;
 }
 .market-card-note {
   margin: 0.35rem 0 0;

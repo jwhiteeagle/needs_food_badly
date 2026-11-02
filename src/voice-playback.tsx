@@ -1,5 +1,6 @@
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { classes, colors, endings } from "./sounds";
+import { DiscordWidget } from "./discord-widget";
 
 // Extra silence between clips, in milliseconds. Tune without changing assets.
 const CLIP_GAP_MS = 0;
@@ -37,6 +38,7 @@ function PixelIcon({ name }: { name: string }) {
 
 type Player = {
   context: AudioContext;
+  gain: GainNode;
   buffers: Map<string, Promise<AudioBuffer>>;
   sources: AudioBufferSourceNode[];
 };
@@ -86,7 +88,7 @@ const styles = `
   border: 1px solid rgb(198 216 146 / 0.35);
   background: rgb(236 236 229 / 0.025);
   display: grid;
-  gap: 0.45rem;
+  gap: 0.3rem;
   align-items: center;
   text-align: center;
   box-shadow:
@@ -291,19 +293,49 @@ const styles = `
   border: 0;
   border-top: 1px solid rgb(198 216 146 / 0.25);
 }
+.voice-lines .voice-tagline-divider {
+  width: min(85%, 30rem);
+  margin: 0.15rem auto 0.45rem;
+  border: 0;
+  border-top: 1px solid rgb(198 216 146 / 0.25);
+}
 .voice-lines .voice-controls {
   display: grid;
   justify-items: center;
-  gap: 0.6rem;
-  margin: 0.4rem 0 0.15rem;
+  gap: 0.2rem;
+  margin: 0.2rem 0 0;
+}
+.voice-lines .voice-tagline {
+  display: grid;
+  gap: 0.15rem;
+  padding-block: 0.3rem;
+  margin-bottom: 0.35rem;
+  color: var(--foreground);
+  text-wrap: balance;
+}
+.voice-lines .voice-tagline h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 650;
+  line-height: 1.25;
+}
+.voice-lines .voice-tagline p {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.3;
 }
 .voice-lines .voice-action-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 2.25fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 2.25fr) minmax(0, 1fr);
   align-items: center;
   justify-items: center;
   gap: clamp(0.35rem, 1.5vw, 0.75rem);
-  width: min(100%, 32rem);
+  width: min(100%, 42rem);
+}
+@media (max-width: 36rem) {
+  .voice-lines .voice-action-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 .voice-lines .widget-jump {
   display: inline-flex;
@@ -357,7 +389,8 @@ const styles = `
   color: var(--foreground);
 }
 .voice-lines .customize-button {
-  min-height: 2rem;
+  min-height: 1.6rem;
+  padding-block: 0.1rem;
   border-color: transparent;
   background: transparent;
   color: var(--muted);
@@ -367,6 +400,28 @@ const styles = `
 }
 .voice-lines .customize-button:hover {
   color: var(--foreground);
+}
+.voice-lines .voice-volume {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) 3.5ch;
+  align-items: center;
+  gap: 0.55rem;
+  width: min(100%, 20rem);
+  margin: 0.1rem 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.voice-lines .voice-volume input {
+  width: 100%;
+  min-width: 0;
+  height: 1.5rem;
+  margin: 0;
+  accent-color: var(--selected);
+  cursor: pointer;
+}
+.voice-lines .voice-volume-value {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 .voice-lines .playback-error {
   margin: 0;
@@ -448,6 +503,7 @@ export function VoicePlayback({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<"idle" | "loading" | "playing">("idle");
   const [error, setError] = useState("");
   const [customizing, setCustomizing] = useState(false);
+  const [volume, setVolume] = useState(1);
   const dialog = useRef<HTMLDialogElement>(null);
   const audio = useRef<Player | null>(null);
   const color = colors[colorIndex]!;
@@ -493,11 +549,14 @@ export function VoicePlayback({ children }: { children: ReactNode }) {
     let attemptedPlayer: Player | null = null;
     try {
       // Create/resume inside the click gesture for mobile autoplay policies.
-      const player = (audio.current ??= {
-        context: new AudioContext(),
-        buffers: new Map(),
-        sources: [],
-      });
+      if (!audio.current) {
+        const context = new AudioContext();
+        const gain = context.createGain();
+        gain.gain.value = volume;
+        gain.connect(context.destination);
+        audio.current = { context, gain, buffers: new Map(), sources: [] };
+      }
+      const player = audio.current;
       attemptedPlayer = player;
       await player.context.resume();
       const buffers = await Promise.all(
@@ -527,7 +586,7 @@ export function VoicePlayback({ children }: { children: ReactNode }) {
       player.sources = buffers.map((buffer) => {
         const source = player.context.createBufferSource();
         source.buffer = buffer;
-        source.connect(player.context.destination);
+        source.connect(player.gain);
         source.addEventListener(
           "ended",
           () => {
@@ -569,7 +628,30 @@ export function VoicePlayback({ children }: { children: ReactNode }) {
         role="group"
         aria-label="Page shortcuts and voice playback"
       >
+        <div className="voice-tagline">
+          <h2>Social WoW Forever Guild - PvP Horde</h2>
+          <p>
+            <em>
+              &quot;Hey, I remember that guy! I played with him that one
+              time!&quot;
+            </em>
+          </p>
+        </div>
+        <hr className="voice-tagline-divider" />
         <div className="voice-action-row">
+          <a
+            className="widget-jump"
+            href="#sprite-browser"
+            aria-label="Open and jump to the sprite browser"
+            aria-controls="sprite-browser"
+            onClick={() => {
+              const browser = document.getElementById("sprite-browser");
+              // Open before native fragment navigation measures the scroll destination
+              if (browser instanceof HTMLDetailsElement) browser.open = true;
+            }}
+          >
+            Sprite Browser
+          </a>
           <a
             className="widget-jump"
             href="#reservations-heading"
@@ -585,9 +667,9 @@ export function VoicePlayback({ children }: { children: ReactNode }) {
           <a
             className="widget-jump"
             href="#gathering-heading"
-            aria-label="Jump to pricing data"
+            aria-label="Jump to auction house data scraping"
           >
-            Pricing
+            AH Data Scraping
           </a>
         </div>
         <button
@@ -597,14 +679,46 @@ export function VoicePlayback({ children }: { children: ReactNode }) {
           aria-controls="voice-settings"
           onClick={() => setCustomizing(true)}
         >
-          Customize playback
+          Guild name themed from the arcade standup announcer in Gauntlet
+          telling you how much you suck.
+          <br />
+          Button above plays voice line, click here to customize
         </button>
+        <label className="voice-volume">
+          <span>Volume</span>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            value={Math.round(volume * 100)}
+            aria-label="Voice line volume"
+            aria-valuetext={`${Math.round(volume * 100)} percent`}
+            onChange={(event) => {
+              const nextVolume = event.currentTarget.valueAsNumber / 100;
+              setVolume(nextVolume);
+              const player = audio.current;
+              if (player) {
+                // Short gain transitions avoid clicks while adjusting an active voice line
+                player.gain.gain.setTargetAtTime(
+                  nextVolume,
+                  player.context.currentTime,
+                  0.015,
+                );
+              }
+            }}
+          />
+          <span className="voice-volume-value" aria-hidden="true">
+            {Math.round(volume * 100)}%
+          </span>
+        </label>
         {!customizing && error && (
           <p className="playback-error" role="alert">
             {error}
           </p>
         )}
       </div>
+      <DiscordWidget />
       {children}
       <dialog
         ref={dialog}

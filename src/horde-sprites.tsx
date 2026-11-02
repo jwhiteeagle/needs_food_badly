@@ -227,8 +227,6 @@ const styles = `
     width: 100%;
     min-width: 0;
     margin-top: 0.75rem;
-    border-top: 1px solid rgb(198 216 146 / 0.18);
-    padding-top: 0.75rem;
     font-family: var(--font-sans);
     color: var(--foreground);
   }
@@ -281,19 +279,31 @@ const styles = `
     border-top: 1px solid rgb(198 216 146 / 0.18);
     padding-top: 0.8rem;
   }
+  #sprite-browser {
+    scroll-margin-top: 1rem;
+  }
   .horde-sprites__tirekickers {
     margin-top: 1.1rem;
   }
   .horde-sprites__main-heading,
   .horde-sprites__tirekickers-heading {
     margin: 0 0 0.4rem;
-    color: var(--muted);
+    color: var(--foreground);
     text-align: center;
-    font-size: 0.9rem;
+    font-size: 1rem;
     font-weight: 650;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
   }
   .horde-sprites__main-heading {
-    font-size: 1.125rem;
+    font-size: 1.25rem;
+  }
+  .horde-sprites__main-description {
+    margin: 0 0 0.6rem;
+    text-align: center;
+    font-size: 0.9rem;
+    line-height: 1.3;
+    text-wrap: balance;
   }
   .horde-sprites__tirekicker-lineup {
     gap: 0.25rem 0.5rem;
@@ -428,12 +438,19 @@ const styles = `
     font-size: 1.125rem;
     font-weight: 650;
   }
-  .horde-sprites__identities > summary {
+  .horde-sprites__gallery-description {
+    margin: 0 0 0.85rem;
+    text-align: center;
+    font-size: 1rem;
+    line-height: 1.3;
+    text-wrap: balance;
+  }
+  .horde-sprites__identities > details > summary {
     width: fit-content;
     max-width: 100%;
     min-height: 48px;
     margin-inline: auto;
-    margin-bottom: 1rem;
+    margin-bottom: 0.4rem;
     border: 1px solid rgb(198 216 146 / 0.5);
     border-radius: 0.5rem;
     padding: 0.75rem 1rem;
@@ -447,11 +464,11 @@ const styles = `
     cursor: pointer;
     touch-action: manipulation;
   }
-  .horde-sprites__identities > summary::marker {
+  .horde-sprites__identities > details > summary::marker {
     color: var(--selected);
   }
-  .horde-sprites__identities > summary:hover,
-  .horde-sprites__identities > summary:focus-visible {
+  .horde-sprites__identities > details > summary:hover,
+  .horde-sprites__identities > details > summary:focus-visible {
     border-color: var(--selected);
     background: rgb(198 216 146 / 0.15);
   }
@@ -611,8 +628,14 @@ export function HordeSprites() {
     <section className="horde-sprites" aria-label="Horde adventurers">
       <style>{styles}</style>
       <h2 id="main-characters-heading" className="horde-sprites__main-heading">
-        Main Characters
+        Main Characters - "Capital G Gamers"
       </h2>
+      <p className="horde-sprites__main-description">
+        <em>
+          Planning on playing a &quot;lot&quot;? Reach out to Jake with a sprite
+          request to be added.
+        </em>
+      </p>
       <ul
         className="horde-sprites__lineup"
         aria-labelledby="main-characters-heading"
@@ -631,7 +654,7 @@ export function HordeSprites() {
           id="tirekickers-sprites-heading"
           className="horde-sprites__tirekickers-heading"
         >
-          Tirekickers
+          Tirekickers - "I dunno man, I'll prob check it out."
         </h2>
         <ul className="horde-sprites__lineup horde-sprites__tirekicker-lineup">
           {tirekickerClasses.map((characterClass, index) => {
@@ -650,121 +673,129 @@ export function HordeSprites() {
           })}
         </ul>
       </section>
-      <details className="horde-sprites__identities" open>
-        <summary>Expand To View More Horde Sprites</summary>
-        <div className="horde-sprites__viewer">
-          <div className="horde-sprites__viewer-toolbar">
-            <label className="horde-sprites__display">
-              Display sprites by
-              <select
-                value={displayFormat}
-                onChange={(event) => {
-                  setDisplayFormat(
-                    event.currentTarget.value === "class" ? "class" : "set",
-                  );
-                  setSelectedClass(classGroups[0]!.id);
-                  setSelectedTier(tierGroups[0]!.id);
-                }}
+      <div className="horde-sprites__identities">
+        <p className="horde-sprites__gallery-description">
+          Cool sprites wearing the gear you wish you had. Clickable wowhead
+          links for sets and weapons.
+        </p>
+        <details id="sprite-browser" open>
+          <summary>Expand To View More Horde Sprites</summary>
+          <div className="horde-sprites__viewer">
+            <div className="horde-sprites__viewer-toolbar">
+              <label className="horde-sprites__display">
+                Display sprites by
+                <select
+                  value={displayFormat}
+                  onChange={(event) => {
+                    setDisplayFormat(
+                      event.currentTarget.value === "class" ? "class" : "set",
+                    );
+                    setSelectedClass(classGroups[0]!.id);
+                    setSelectedTier(tierGroups[0]!.id);
+                  }}
+                >
+                  <option value="set">Tier</option>
+                  <option value="class">Class</option>
+                </select>
+              </label>
+              <div
+                className="horde-sprites__filter-nav"
+                role="group"
+                aria-label={
+                  displayFormat === "class"
+                    ? "Filter sprites by class"
+                    : "Filter sprites by tier"
+                }
               >
-                <option value="set">Tier</option>
-                <option value="class">Class</option>
-              </select>
-            </label>
+                {displayFormat === "class"
+                  ? classGroups.map(({ id, label }) => (
+                      <button
+                        key={id}
+                        className="horde-sprites__filter-button"
+                        type="button"
+                        title={label}
+                        aria-label={`Show ${label} sprites`}
+                        aria-controls="sprite-viewer-content"
+                        aria-pressed={selectedClass === id}
+                        onClick={() => setSelectedClass(id)}
+                      >
+                        <img
+                          src={classIcons[label]}
+                          alt=""
+                          width="28"
+                          height="28"
+                        />
+                      </button>
+                    ))
+                  : tierGroups.map(({ id, label }) => (
+                      <button
+                        key={id}
+                        className="horde-sprites__filter-button horde-sprites__tier-button"
+                        type="button"
+                        title={`${label} · ${tierArtwork[id].location} artwork`}
+                        style={{
+                          backgroundImage: `url("${tierArtwork[id].src}")`,
+                        }}
+                        aria-controls="sprite-viewer-content"
+                        aria-pressed={selectedTier === id}
+                        onClick={() => setSelectedTier(id)}
+                      >
+                        <span>{label}</span>
+                      </button>
+                    ))}
+                <button
+                  className={`horde-sprites__filter-button horde-sprites__show-all${displayFormat === "set" ? " horde-sprites__all-tiers" : ""}`}
+                  type="button"
+                  aria-controls="sprite-viewer-content"
+                  aria-pressed={
+                    displayFormat === "class"
+                      ? selectedClass === "all"
+                      : selectedTier === "all"
+                  }
+                  onClick={() =>
+                    displayFormat === "class"
+                      ? setSelectedClass("all")
+                      : setSelectedTier("all")
+                  }
+                >
+                  {displayFormat === "set" && <ShowAllIcon />}
+                  <span>Show all</span>
+                </button>
+              </div>
+            </div>
             <div
-              className="horde-sprites__filter-nav"
-              role="group"
+              id="sprite-viewer-content"
+              className="horde-sprites__viewer-content"
+              role="region"
               aria-label={
                 displayFormat === "class"
-                  ? "Filter sprites by class"
-                  : "Filter sprites by tier"
+                  ? "Sprites by class"
+                  : "Sprites by tier"
               }
             >
-              {displayFormat === "class"
-                ? classGroups.map(({ id, label }) => (
-                    <button
-                      key={id}
-                      className="horde-sprites__filter-button"
-                      type="button"
-                      title={label}
-                      aria-label={`Show ${label} sprites`}
-                      aria-controls="sprite-viewer-content"
-                      aria-pressed={selectedClass === id}
-                      onClick={() => setSelectedClass(id)}
-                    >
-                      <img
-                        src={classIcons[label]}
-                        alt=""
-                        width="28"
-                        height="28"
-                      />
-                    </button>
-                  ))
-                : tierGroups.map(({ id, label }) => (
-                    <button
-                      key={id}
-                      className="horde-sprites__filter-button horde-sprites__tier-button"
-                      type="button"
-                      title={`${label} · ${tierArtwork[id].location} artwork`}
-                      style={{
-                        backgroundImage: `url("${tierArtwork[id].src}")`,
-                      }}
-                      aria-controls="sprite-viewer-content"
-                      aria-pressed={selectedTier === id}
-                      onClick={() => setSelectedTier(id)}
-                    >
-                      <span>{label}</span>
-                    </button>
-                  ))}
-              <button
-                className={`horde-sprites__filter-button horde-sprites__show-all${displayFormat === "set" ? " horde-sprites__all-tiers" : ""}`}
-                type="button"
-                aria-controls="sprite-viewer-content"
-                aria-pressed={
-                  displayFormat === "class"
-                    ? selectedClass === "all"
-                    : selectedTier === "all"
-                }
-                onClick={() =>
-                  displayFormat === "class"
-                    ? setSelectedClass("all")
-                    : setSelectedTier("all")
-                }
-              >
-                {displayFormat === "set" && <ShowAllIcon />}
-                <span>Show all</span>
-              </button>
+              {groups.map(({ id, label, items }) => (
+                <section
+                  key={id}
+                  id={`sprite-group-${id}`}
+                  className="horde-sprites__group"
+                  aria-labelledby={`sprites-${id}`}
+                >
+                  <h2
+                    id={`sprites-${id}`}
+                    className="horde-sprites__group-heading"
+                  >
+                    {label}
+                  </h2>
+                  <SpriteLineup
+                    items={items}
+                    byClass={displayFormat === "class"}
+                  />
+                </section>
+              ))}
             </div>
           </div>
-          <div
-            id="sprite-viewer-content"
-            className="horde-sprites__viewer-content"
-            role="region"
-            aria-label={
-              displayFormat === "class" ? "Sprites by class" : "Sprites by tier"
-            }
-          >
-            {groups.map(({ id, label, items }) => (
-              <section
-                key={id}
-                id={`sprite-group-${id}`}
-                className="horde-sprites__group"
-                aria-labelledby={`sprites-${id}`}
-              >
-                <h2
-                  id={`sprites-${id}`}
-                  className="horde-sprites__group-heading"
-                >
-                  {label}
-                </h2>
-                <SpriteLineup
-                  items={items}
-                  byClass={displayFormat === "class"}
-                />
-              </section>
-            ))}
-          </div>
-        </div>
-      </details>
+        </details>
+      </div>
     </section>
   );
 }

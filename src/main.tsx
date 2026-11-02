@@ -81,8 +81,8 @@ const reservations: {
   {
     name: "Jake",
     characters: [
+      { name: "Red Minotaur", wowClass: wowClasses.druid, featured: true },
       { name: "Green Warrior", wowClass: wowClasses.warrior, featured: true },
-      { name: "Red Minotaur", wowClass: wowClasses.druid },
       { name: "Green Scout", wowClass: wowClasses.hunter },
     ],
   },
@@ -156,6 +156,11 @@ const reservations: {
     name: "Scott",
     limitedPlaytime: true,
     characters: [{ wowClass: wowClasses.mage, featured: true }],
+  },
+  {
+    name: "Az",
+    limitedPlaytime: true,
+    characters: [{ wowClass: wowClasses.warlock, featured: true }],
   },
 ];
 
@@ -452,10 +457,11 @@ function MarketCardSection({
   headerIcon,
   gridClassName = "",
   headerHref,
+  className = "",
 }: {
   title: string;
   headingId?: string;
-  description?: string;
+  description?: ReactNode;
   loading: boolean;
   empty: boolean;
   error: string;
@@ -468,6 +474,7 @@ function MarketCardSection({
   headerIcon?: string;
   gridClassName?: string;
   headerHref?: string;
+  className?: string;
 }) {
   const iconTitle = (
     <>
@@ -477,11 +484,7 @@ function MarketCardSection({
   );
   return (
     <section
-      className={
-        headingId
-          ? `market-card-section market-card-section-headed${headerIcon ? " profession-section" : ""}`
-          : "market-card-section"
-      }
+      className={`market-card-section${headingId ? " market-card-section-headed" : ""} ${className}`.trim()}
       aria-labelledby={headingId}
       aria-label={headingId ? undefined : title}
     >
@@ -827,7 +830,14 @@ function PinnedItems({ icons }: { icons: boolean }) {
       title="Pinned Items"
       headingId="pinned-items-heading"
       gridClassName="pinned-grid"
-      description="Pin favorites from any item card. Saved in this browser."
+      description={
+        <>
+          Want to finally afford your own epic mount? Look up items by entering
+          the ID below and pin them for later.
+          <br />
+          Pin favorites from any of my pre-constructed item cards below.
+        </>
+      }
       loading={false}
       empty={false}
       error={pinning.pins.length ? pinning.refreshError : ""}
@@ -1015,7 +1025,8 @@ type CraftScan = {
   attributionUrl: string;
 };
 
-function ProfessionCrafts({
+// One profession header and its ranked cards stay together as a grid item
+function ProfessionBlock({
   profession,
   icons,
   onScan,
@@ -1046,6 +1057,7 @@ function ProfessionCrafts({
   );
   return (
     <MarketCardSection
+      className="card-block profession-block"
       title={profession.name}
       headingId={`craft-${profession.name.toLowerCase().replaceAll(" ", "-")}`}
       heading="h4"
@@ -1099,41 +1111,43 @@ function ProfessionCraftMargins({ icons }: { icons: boolean }) {
   source.searchParams.delete("profession");
   return (
     <section
-      className="market-card-section-headed"
+      className="market-card-section-headed craft-margins"
       aria-labelledby="craft-margins-heading"
     >
-      <h3 id="craft-margins-heading">Profession Craft Margins</h3>
-      <p className="section-subheading">Top 3 calculated craft recipes</p>
-      <p
-        className="market-observed market-source craft-summary"
-        data-stale={Boolean(old)}
-      >
-        {first && (
-          <>
-            {old ? "Beta scan" : "Scanned"}{" "}
-            <time dateTime={first.toISOString()}>
-              {first.toLocaleDateString()}
-            </time>
-            {last &&
-            last.toLocaleDateString() !== first.toLocaleDateString() ? (
-              <>
-                {" "}
-                -{" "}
-                <time dateTime={last.toISOString()}>
-                  {last.toLocaleDateString()}
-                </time>
-              </>
-            ) : null}
-            {" · "}
-          </>
-        )}
-        <a href={source.href} target="_blank" rel="noopener noreferrer">
-          Prices from AHledger
-        </a>
-      </p>
-      <div className="profession-list">
+      <header className="craft-margins-header">
+        <h3 id="craft-margins-heading">Profession Craft Margins</h3>
+        <p className="section-subheading">Top 3 calculated craft recipes</p>
+        <p
+          className="market-observed market-source craft-summary"
+          data-stale={Boolean(old)}
+        >
+          {first && (
+            <>
+              {old ? "Beta scan" : "Scanned"}{" "}
+              <time dateTime={first.toISOString()}>
+                {first.toLocaleDateString()}
+              </time>
+              {last &&
+              last.toLocaleDateString() !== first.toLocaleDateString() ? (
+                <>
+                  {" "}
+                  -{" "}
+                  <time dateTime={last.toISOString()}>
+                    {last.toLocaleDateString()}
+                  </time>
+                </>
+              ) : null}
+              {" · "}
+            </>
+          )}
+          <a href={source.href} target="_blank" rel="noopener noreferrer">
+            Prices from AHledger
+          </a>
+        </p>
+      </header>
+      <div className="profession-grid">
         {CRAFT_PROFESSIONS.map((profession) => (
-          <ProfessionCrafts
+          <ProfessionBlock
             key={profession.name}
             profession={profession}
             icons={icons}
