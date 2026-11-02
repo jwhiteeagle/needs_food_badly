@@ -1,6 +1,7 @@
-// Public exports only; source masters and prompts remain in the private workshop.
+// Public references copied from selected workshop loadouts. Builds do not read the workshop
 import epicAtlas from "./pvp_sets/horde/pvp_epic/256/lineup_horde_pvp_epic_256.png" with { type: "file" };
 import rareAtlas from "./pvp_sets/horde/pvp_rare/256/lineup_horde_pvp_rare_256.png" with { type: "file" };
+import type { SpriteCatalog } from "./types";
 
 export const pvpEpicIdentities = {
   src: epicAtlas,
@@ -14,84 +15,159 @@ export const pvpEpicIdentities = {
       race: "Orc",
       column: 0,
       characterClass: "Warrior",
-      set: "Warlord's Battlegear",
-      weapon: "High Warlord's Greatsword",
-      weaponUrl: "https://www.wowhead.com/classic/item=18877",
+      set: {
+        displayName: "Warlord's Battlegear",
+        setId: 383,
+      },
+      weapons: [
+        {
+          displayName: "High Warlord's Greatsword",
+          itemId: 18877,
+        },
+      ],
     },
     {
       id: "orc-hunter-horde-pvp_epic",
       race: "Orc",
       column: 1,
       characterClass: "Hunter",
-      set: "Warlord's Pursuit",
-      weapon: "High Warlord's Recurve + High Warlord's Pig Sticker",
-      weaponUrl: "https://www.wowhead.com/classic/item=18835",
+      set: {
+        displayName: "Warlord's Pursuit",
+        setId: 396,
+      },
+      weapons: [
+        {
+          displayName: "High Warlord's Recurve",
+          itemId: 18835,
+        },
+        {
+          displayName: "High Warlord's Pig Sticker",
+          itemId: 18871,
+        },
+      ],
     },
     {
       id: "troll-rogue-horde-pvp_epic",
       race: "Troll",
       column: 2,
       characterClass: "Rogue",
-      set: "Warlord's Vestments",
-      weapon: "High Warlord's Razor ×2",
-      weaponUrl: "https://www.wowhead.com/classic/item=18840",
+      set: {
+        displayName: "Warlord's Vestments",
+        setId: 393,
+      },
+      weapons: [
+        {
+          displayName: "High Warlord's Razor",
+          itemId: 18840,
+        },
+        {
+          displayName: "High Warlord's Razor",
+          itemId: 18840,
+        },
+      ],
     },
     {
       id: "tauren-shaman-horde-pvp_epic",
       race: "Tauren",
       column: 3,
       characterClass: "Shaman",
-      set: "Warlord's Earthshaker",
-      weapon: "High Warlord's Pulverizer",
-      weaponUrl: "https://www.wowhead.com/classic/item=18868",
+      set: {
+        displayName: "Warlord's Earthshaker",
+        setId: 386,
+      },
+      weapons: [
+        {
+          displayName: "High Warlord's Pulverizer",
+          itemId: 18868,
+        },
+      ],
     },
     {
       id: "orc-warlock-horde-pvp_epic",
       race: "Orc",
       column: 4,
       characterClass: "Warlock",
-      set: "Warlord's Threads",
-      weapon: "High Warlord's War Staff",
-      weaponUrl: "https://www.wowhead.com/classic/item=18874",
+      set: {
+        displayName: "Warlord's Threads",
+        setId: 391,
+      },
+      weapons: [
+        {
+          displayName: "High Warlord's War Staff",
+          itemId: 18874,
+        },
+      ],
     },
     {
       id: "undead-mage-horde-pvp_epic",
       race: "Undead",
       column: 5,
       characterClass: "Mage",
-      set: "Warlord's Regalia",
-      weapon: "High Warlord's Spellblade + High Warlord's Tome of Destruction",
-      weaponUrl: "https://www.wowhead.com/classic/item=23466",
+      set: {
+        displayName: "Warlord's Regalia",
+        setId: 387,
+      },
+      weapons: [
+        {
+          displayName: "High Warlord's Spellblade",
+          itemId: 23466,
+        },
+        {
+          displayName: "High Warlord's Tome of Destruction",
+          itemId: 23468,
+        },
+      ],
     },
     {
       id: "skyborne-priest-horde-pvp_epic",
       race: "Skyborne",
       column: 6,
       characterClass: "Priest",
-      set: "Warlord's Raiment",
-      weapon: "High Warlord's War Staff",
-      weaponUrl: "https://www.wowhead.com/classic/item=18874",
+      set: {
+        displayName: "Warlord's Raiment",
+        setId: 390,
+      },
+      weapons: [
+        {
+          displayName: "High Warlord's War Staff",
+          itemId: 18874,
+        },
+      ],
     },
     {
       id: "undead-paladin-horde-pvp_epic",
       race: "Undead",
       column: 7,
       characterClass: "Paladin",
-      set: "Field Marshal's Aegis",
-      weapon: "High Warlord's Greatsword",
-      weaponUrl: "https://www.wowhead.com/classic/item=18877",
+      set: {
+        displayName: "Field Marshal's Aegis",
+        setId: 402,
+      },
+      weapons: [
+        {
+          displayName: "High Warlord's Greatsword",
+          itemId: 18877,
+        },
+      ],
     },
     {
       id: "tauren-druid-horde-pvp_epic",
       race: "Tauren",
       column: 8,
       characterClass: "Druid",
-      set: "Warlord's Sanctuary",
-      weapon: "High Warlord's War Staff",
-      weaponUrl: "https://www.wowhead.com/classic/item=18874",
+      set: {
+        displayName: "Warlord's Sanctuary",
+        setId: 398,
+      },
+      weapons: [
+        {
+          displayName: "High Warlord's War Staff",
+          itemId: 18874,
+        },
+      ],
     },
   ],
-} as const;
+} as const satisfies SpriteCatalog;
 
 export const pvpRareIdentities = {
   src: rareAtlas,
@@ -105,81 +181,156 @@ export const pvpRareIdentities = {
       race: "Orc",
       column: 0,
       characterClass: "Warrior",
-      set: "Champion's Battlearmor",
-      weapon: "The Unstoppable Force",
-      weaponUrl: "https://www.wowhead.com/classic/item=19323",
+      set: {
+        displayName: "Champion's Battlearmor",
+        setId: 537,
+      },
+      weapons: [
+        {
+          displayName: "The Unstoppable Force",
+          itemId: 19323,
+        },
+      ],
     },
     {
       id: "orc-hunter-horde-pvp_rare",
       race: "Orc",
       column: 1,
       characterClass: "Hunter",
-      set: "Champion's Pursuance",
-      weapon: "Outrider's Bow + Ice Barbed Spear",
-      weaponUrl: "https://www.wowhead.com/classic/item=19558",
+      set: {
+        displayName: "Champion's Pursuance",
+        setId: 543,
+      },
+      weapons: [
+        {
+          displayName: "Outrider's Bow",
+          itemId: 19558,
+        },
+        {
+          displayName: "Ice Barbed Spear",
+          itemId: 19106,
+        },
+      ],
     },
     {
       id: "troll-rogue-horde-pvp_rare",
       race: "Troll",
       column: 2,
       characterClass: "Rogue",
-      set: "Champion's Guard",
-      weapon: "The Lobotomizer + Scout's Blade",
-      weaponUrl: "https://www.wowhead.com/classic/item=19324",
+      set: {
+        displayName: "Champion's Guard",
+        setId: 522,
+      },
+      weapons: [
+        {
+          displayName: "The Lobotomizer",
+          itemId: 19324,
+        },
+        {
+          displayName: "Scout's Blade",
+          itemId: 19542,
+        },
+      ],
     },
     {
       id: "tauren-shaman-horde-pvp_rare",
       race: "Tauren",
       column: 3,
       characterClass: "Shaman",
-      set: "Champion's Stormcaller",
-      weapon: "The Unstoppable Force",
-      weaponUrl: "https://www.wowhead.com/classic/item=19323",
+      set: {
+        displayName: "Champion's Stormcaller",
+        setId: 538,
+      },
+      weapons: [
+        {
+          displayName: "The Unstoppable Force",
+          itemId: 19323,
+        },
+      ],
     },
     {
       id: "orc-warlock-horde-pvp_rare",
       race: "Orc",
       column: 4,
       characterClass: "Warlock",
-      set: "Champion's Dreadgear",
-      weapon: "Whiteout Staff",
-      weaponUrl: "https://www.wowhead.com/classic/item=19101",
+      set: {
+        displayName: "Champion's Dreadgear",
+        setId: 541,
+      },
+      weapons: [
+        {
+          displayName: "Whiteout Staff",
+          itemId: 19101,
+        },
+      ],
     },
     {
       id: "undead-mage-horde-pvp_rare",
       race: "Undead",
       column: 5,
       characterClass: "Mage",
-      set: "Champion's Arcanum",
-      weapon: "Mindfang + Tome of the Ice Lord",
-      weaponUrl: "https://www.wowhead.com/classic/item=20214",
+      set: {
+        displayName: "Champion's Arcanum",
+        setId: 542,
+      },
+      weapons: [
+        {
+          displayName: "Mindfang",
+          itemId: 20214,
+        },
+        {
+          displayName: "Tome of the Ice Lord",
+          itemId: 19310,
+        },
+      ],
     },
     {
       id: "skyborne-priest-horde-pvp_rare",
       race: "Skyborne",
       column: 6,
       characterClass: "Priest",
-      set: "Champion's Investiture",
-      weapon: "Advisor's Gnarled Staff",
-      weaponUrl: "https://www.wowhead.com/classic/item=19566",
+      set: {
+        displayName: "Champion's Investiture",
+        setId: 540,
+      },
+      weapons: [
+        {
+          displayName: "Advisor's Gnarled Staff",
+          itemId: 19566,
+        },
+      ],
     },
     {
       id: "undead-paladin-horde-pvp_rare",
       race: "Undead",
       column: 7,
       characterClass: "Paladin",
-      set: "Lieutenant Commander's Redoubt",
-      weapon: "The Unstoppable Force",
-      weaponUrl: "https://www.wowhead.com/classic/item=19323",
+      set: {
+        displayName: "Lieutenant Commander's Redoubt",
+        setId: 544,
+      },
+      weapons: [
+        {
+          displayName: "The Unstoppable Force",
+          itemId: 19323,
+        },
+      ],
     },
     {
       id: "tauren-druid-horde-pvp_rare",
       race: "Tauren",
       column: 8,
       characterClass: "Druid",
-      set: "Champion's Refuge",
-      weapon: "Ironbark Staff",
-      weaponUrl: "https://www.wowhead.com/classic/item=20220",
+      set: {
+        displayName: "Champion's Refuge",
+        setId: 539,
+      },
+      weapons: [
+        {
+          displayName: "Ironbark Staff",
+          itemId: 20220,
+        },
+      ],
     },
   ],
-} as const;
+} as const satisfies SpriteCatalog;

@@ -1,5 +1,6 @@
-// Public exports only; reference images and masters stay in the standalone workshop.
+// Public references copied from selected workshop loadouts. Builds do not read the workshop
 import dungeonTwoAtlas from "./dungeon_set_2/256/lineup_dungeon_set_2_256.png" with { type: "file" };
+import type { SpriteCatalog } from "./types";
 
 export const dungeonTwoIdentities = {
   src: dungeonTwoAtlas,
@@ -13,81 +14,160 @@ export const dungeonTwoIdentities = {
       race: "Orc",
       column: 0,
       characterClass: "Warrior",
-      set: "Battlegear of Heroism",
-      weapon: "Quel'Serrar + Drillborer Disk",
-      weaponUrl: "https://www.wowhead.com/classic/item=18348",
+      set: {
+        displayName: "Battlegear of Heroism",
+        setId: 511,
+      },
+      weapons: [
+        {
+          displayName: "Quel'Serrar",
+          itemId: 18348,
+        },
+        {
+          displayName: "Drillborer Disk",
+          itemId: 17066,
+        },
+      ],
     },
     {
       id: "orc-hunter-dungeon2",
       race: "Orc",
       column: 1,
       characterClass: "Hunter",
-      set: "Beastmaster Armor",
-      weapon: "Hurricane + Shadowstrike",
-      weaponUrl: "https://www.wowhead.com/classic/item=2824",
+      set: {
+        displayName: "Beastmaster Armor",
+        setId: 515,
+      },
+      weapons: [
+        {
+          displayName: "Hurricane",
+          itemId: 2824,
+        },
+        {
+          displayName: "Shadowstrike",
+          itemId: 17074,
+        },
+      ],
     },
     {
       id: "troll-rogue-dungeon2",
       race: "Troll",
       column: 2,
       characterClass: "Rogue",
-      set: "Darkmantle Armor",
-      weapon: "Shadowblade + Alcor's Sunrazor",
-      weaponUrl: "https://www.wowhead.com/classic/item=2163",
+      set: {
+        displayName: "Darkmantle Armor",
+        setId: 512,
+      },
+      weapons: [
+        {
+          displayName: "Shadowblade",
+          itemId: 2163,
+        },
+        {
+          displayName: "Alcor's Sunrazor",
+          itemId: 14555,
+        },
+      ],
     },
     {
       id: "tauren-shaman-dungeon2",
       race: "Tauren",
       column: 3,
       characterClass: "Shaman",
-      set: "The Five Thunders",
-      weapon: "Sulfuron Hammer",
-      weaponUrl: "https://www.wowhead.com/classic/item=17193",
+      set: {
+        displayName: "The Five Thunders",
+        setId: 519,
+      },
+      weapons: [
+        {
+          displayName: "Sulfuron Hammer",
+          itemId: 17193,
+        },
+      ],
     },
     {
       id: "orc-warlock-dungeon2",
       race: "Orc",
       column: 4,
       characterClass: "Warlock",
-      set: "Deathmist Raiment",
-      weapon: "Amberseal Keeper",
-      weaponUrl: "https://www.wowhead.com/classic/item=17113",
+      set: {
+        displayName: "Deathmist Raiment",
+        setId: 518,
+      },
+      weapons: [
+        {
+          displayName: "Amberseal Keeper",
+          itemId: 17113,
+        },
+      ],
     },
     {
       id: "undead-mage-dungeon2",
       race: "Undead",
       column: 5,
       characterClass: "Mage",
-      set: "Sorcerer's Regalia",
-      weapon: "Blade of Necromancy + Sorcerer-themed spellbook",
-      weaponUrl: "https://www.wowhead.com/classic/item=22332",
+      set: {
+        displayName: "Sorcerer's Regalia",
+        setId: 517,
+      },
+      weapons: [
+        {
+          displayName: "Blade of Necromancy",
+          itemId: 22332,
+        },
+        {
+          displayName: "Sorcerer-themed spellbook",
+          itemId: null,
+        },
+      ],
     },
     {
       id: "skyborne-priest-dungeon2",
       race: "Skyborne",
       column: 6,
       characterClass: "Priest",
-      set: "Vestments of the Virtuous",
-      weapon: "Staff of Jordan",
-      weaponUrl: "https://www.wowhead.com/classic/item=873",
+      set: {
+        displayName: "Vestments of the Virtuous",
+        setId: 514,
+      },
+      weapons: [
+        {
+          displayName: "Staff of Jordan",
+          itemId: 873,
+        },
+      ],
     },
     {
       id: "undead-paladin-dungeon2",
       race: "Undead",
       column: 7,
       characterClass: "Paladin",
-      set: "Soulforge Armor",
-      weapon: "Destiny",
-      weaponUrl: "https://www.wowhead.com/classic/item=647",
+      set: {
+        displayName: "Soulforge Armor",
+        setId: 516,
+      },
+      weapons: [
+        {
+          displayName: "Destiny",
+          itemId: 647,
+        },
+      ],
     },
     {
       id: "tauren-druid-dungeon2",
       race: "Tauren",
       column: 8,
       characterClass: "Druid",
-      set: "Feralheart Raiment",
-      weapon: "Spire of the Stoneshaper",
-      weaponUrl: "https://www.wowhead.com/classic/item=12532",
+      set: {
+        displayName: "Feralheart Raiment",
+        setId: 513,
+      },
+      weapons: [
+        {
+          displayName: "Spire of the Stoneshaper",
+          itemId: 12532,
+        },
+      ],
     },
   ],
-} as const;
+} as const satisfies SpriteCatalog;

@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { classicLink } from "./helper-modules";
 import { classIdentities, tierOneIdentities } from "./horde-sprites/assets";
 import { dungeonOneIdentities } from "./horde-sprites/dungeon-one";
 import { dungeonTwoIdentities } from "./horde-sprites/dungeon-two";
 import { pvpEpicIdentities, pvpRareIdentities } from "./horde-sprites/pvp";
 import { tierThreeIdentities } from "./horde-sprites/tier-three";
+import type { SpriteCatalog } from "./horde-sprites/types";
 import warriorIcon from "./assets/wow/warrior.jpg" with { type: "file" };
 import hunterIcon from "./assets/wow/hunter.jpg" with { type: "file" };
 import rogueIcon from "./assets/wow/rogue.jpg" with { type: "file" };
@@ -13,12 +15,13 @@ import mageIcon from "./assets/wow/mage.jpg" with { type: "file" };
 import priestIcon from "./assets/wow/priest.jpg" with { type: "file" };
 import paladinIcon from "./assets/wow/paladin.jpg" with { type: "file" };
 import druidIcon from "./assets/wow/druid.jpg" with { type: "file" };
-import scholomanceIcon from "./assets/wow/tiers/scholomance.jpg" with { type: "file" };
-import blackrockDepthsIcon from "./assets/wow/tiers/blackrock-depths.jpg" with { type: "file" };
-import moltenCoreIcon from "./assets/wow/tiers/molten-core.jpg" with { type: "file" };
-import blackwingLairIcon from "./assets/wow/tiers/blackwing-lair.jpg" with { type: "file" };
-import naxxramasIcon from "./assets/wow/tiers/naxxramas.jpg" with { type: "file" };
-import hordePvpIcon from "./assets/wow/tiers/horde-pvp.jpg" with { type: "file" };
+import dungeonOneArtwork from "./assets/wow/tiers/dungeon_set_1_artwork.webp" with { type: "file" };
+import dungeonTwoArtwork from "./assets/wow/tiers/dungeon_set_2_artwork.webp" with { type: "file" };
+import pvpRareArtwork from "./assets/wow/tiers/pvp_rare_artwork.webp" with { type: "file" };
+import pvpEpicArtwork from "./assets/wow/tiers/pvp_epic_artwork.webp" with { type: "file" };
+import raidOneArtwork from "./assets/wow/tiers/raid_tier_1_artwork.webp" with { type: "file" };
+import raidTwoArtwork from "./assets/wow/tiers/raid_tier_2_artwork.webp" with { type: "file" };
+import raidThreeArtwork from "./assets/wow/tiers/raid_tier_3_artwork.webp" with { type: "file" };
 
 const spriteSize = classIdentities.displaySize;
 const classIcons = {
@@ -31,6 +34,17 @@ const classIcons = {
   Priest: priestIcon,
   Paladin: paladinIcon,
   Druid: druidIcon,
+};
+const classColors: Record<string, string> = {
+  Warrior: "#C79C6E",
+  Hunter: "#ABD473",
+  Rogue: "#FFF569",
+  Shaman: "#0070DE",
+  Warlock: "#9482C9",
+  Mage: "#69CCF0",
+  Priest: "#FFFFFF",
+  Paladin: "#F58CBA",
+  Druid: "#FF7D0A",
 };
 
 const spriteSets = [
@@ -64,24 +78,60 @@ const setGroups = spriteSets.map(({ id, label, collection }) => ({
 
 const tierGroups = [...setGroups].reverse();
 
-type GallerySprite = (typeof setGroups)[number]["items"][number];
-
-// WoW icons from https://wow.zamimg.com/images/wow/icons/large/.
-// Achievement IDs retain the source association; comments retain icon filenames.
-const tierIcons = {
-  "dungeon-set-1": scholomanceIcon, // 645: spell_holy_senseundead
-  "dungeon-set-2": blackrockDepthsIcon, // 642: achievement_boss_emperordagranthaurissan
-  "pvp-rare": hordePvpIcon, // 619: inv_bannerpvp_01
-  "pvp-epic": hordePvpIcon,
-  "raid-tier-1": moltenCoreIcon, // 686: achievement_boss_ragnaros
-  "raid-tier-2": blackwingLairIcon, // 685: achievement_boss_nefarion
-  "raid-tier-3": naxxramasIcon, // 576: achievement_dungeon_naxxramas_normal
+type GallerySprite = SpriteCatalog["items"][number] & {
+  atlas: string;
+  columns: number;
+  groupLabel: string;
 };
 
-function TierIcon({ id }: { id: keyof typeof tierIcons | "all" }) {
-  if (id !== "all") {
-    return <img src={tierIcons[id]} alt="" width="28" height="28" />;
-  }
+// Framed journal art: https://wow.zamimg.com/images/wow/journal/ui-ej-lorebg-<location>.png
+// Alpha padding trimmed, whole frame resized to 256px square; PvP uses visual stand-ins
+const tierArtwork = {
+  "dungeon-set-1": {
+    src: dungeonOneArtwork,
+    location: "Scholomance",
+    source: "scholomance",
+    fileDataId: 608254,
+  },
+  "dungeon-set-2": {
+    src: dungeonTwoArtwork,
+    location: "Blackrock Depths",
+    source: "blackrockdepths",
+    fileDataId: 608235,
+  },
+  "pvp-rare": {
+    src: pvpRareArtwork,
+    location: "Dire Maul",
+    source: "diremaul",
+    fileDataId: 608239,
+  },
+  "pvp-epic": {
+    src: pvpEpicArtwork,
+    location: "Utgarde Pinnacle",
+    source: "utgardepinnacle",
+    fileDataId: 608266,
+  },
+  "raid-tier-1": {
+    src: raidOneArtwork,
+    location: "Molten Core",
+    source: "moltencore",
+    fileDataId: 1396505,
+  },
+  "raid-tier-2": {
+    src: raidTwoArtwork,
+    location: "Blackwing Lair",
+    source: "blackwinglair",
+    fileDataId: 1396499,
+  },
+  "raid-tier-3": {
+    src: raidThreeArtwork,
+    location: "Naxxramas",
+    source: "naxxramas",
+    fileDataId: 1396506,
+  },
+};
+
+function ShowAllIcon() {
   return (
     <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true">
       <path
@@ -219,6 +269,13 @@ const styles = `
     color: var(--foreground);
     font-size: 0.85rem;
   }
+  .horde-sprites__set-name {
+    font-weight: 700;
+  }
+  .horde-sprites__weapons {
+    display: grid;
+    gap: 0.15rem;
+  }
   .horde-sprites__identities {
     margin-top: 1.1rem;
     border-top: 1px solid rgb(198 216 146 / 0.18);
@@ -300,7 +357,7 @@ const styles = `
   .horde-sprites__filter-button:hover,
   .horde-sprites__filter-button[aria-pressed="true"] {
     border-color: var(--selected);
-    background: rgb(198 216 146 / 0.15);
+    background-color: rgb(198 216 146 / 0.15);
     box-shadow: inset 0 0 0 1px var(--selected);
   }
   .horde-sprites__show-all {
@@ -309,18 +366,48 @@ const styles = `
     padding-inline: 0.85rem;
   }
   .horde-sprites__tier-button {
-    width: 6.5rem;
-    height: auto;
-    min-height: 4.75rem;
-    grid-template-rows: 28px 1fr;
-    gap: 0.3rem;
-    padding: 0.5rem;
+    position: relative;
+    width: 5rem;
+    height: 5rem;
+    padding: 0.4rem;
+    border: 0;
+    border-radius: 0;
+    background-color: transparent;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+  }
+  .horde-sprites__tier-button::before {
+    content: "";
+    position: absolute;
+    inset: 0.4rem;
+    background: rgb(0 0 0 / 0.3);
+    pointer-events: none;
+  }
+  .horde-sprites__tier-button:hover,
+  .horde-sprites__tier-button[aria-pressed="true"],
+  .horde-sprites__tier-button:focus-visible {
+    outline: 2px solid var(--selected);
+    outline-offset: 1px;
+    box-shadow: none;
   }
   .horde-sprites__tier-button span {
-    font-size: 0.75rem;
+    position: relative;
+    align-self: center;
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 700;
     line-height: 1.2;
     text-align: center;
     text-wrap: balance;
+    text-shadow: -1px -1px 1px black, 1px -1px 1px black,
+      -1px 1px 1px black, 1px 1px 1px black, 0 2px 4px black;
+  }
+  .horde-sprites__all-tiers {
+    width: 5rem;
+    height: 5rem;
+    margin-left: 0;
+    grid-template-rows: 1fr auto;
+    padding: 0.65rem;
   }
   .horde-sprites__viewer-content {
     padding: 0.75rem;
@@ -368,11 +455,13 @@ const styles = `
     border-color: var(--selected);
     background: rgb(198 216 146 / 0.15);
   }
+  .horde-sprites__set-name,
   .horde-sprites__weapon {
     color: inherit;
     text-decoration: none;
     overflow-wrap: anywhere;
   }
+  .horde-sprites__set-name[href]:hover,
   .horde-sprites__weapon:hover {
     color: var(--foreground);
     text-decoration: underline;
@@ -410,6 +499,7 @@ function Sprite({
   );
 }
 
+// Missing catalog IDs remain readable text. Sets and items have separate ID spaces
 function SpriteLineup({
   items,
   byClass,
@@ -422,11 +512,9 @@ function SpriteLineup({
       {items.map(
         ({
           id,
-          race,
           characterClass,
           set,
-          weapon,
-          weaponUrl,
+          weapons,
           column,
           atlas,
           columns,
@@ -436,18 +524,40 @@ function SpriteLineup({
             <figure className="horde-sprites__figure">
               <Sprite column={column} atlas={atlas} columns={columns} />
               <figcaption className="horde-sprites__caption">
-                <strong>{byClass ? groupLabel : characterClass}</strong>
-                <span>
-                  {race} · {set}
+                <strong style={{ color: classColors[characterClass] }}>
+                  {byClass ? groupLabel : characterClass}
+                </strong>
+                {set.setId === null ? (
+                  <span className="horde-sprites__set-name">
+                    {set.displayName}
+                  </span>
+                ) : (
+                  <a
+                    className="horde-sprites__set-name"
+                    href={classicLink.set(set.setId)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {set.displayName}
+                  </a>
+                )}
+                <span className="horde-sprites__weapons">
+                  {weapons.map(({ displayName, itemId }, index) =>
+                    itemId === null ? (
+                      <span key={`prop-${index}`}>{displayName}</span>
+                    ) : (
+                      <a
+                        key={`${itemId}-${index}`}
+                        className="horde-sprites__weapon"
+                        href={classicLink.item(itemId)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {displayName}
+                      </a>
+                    ),
+                  )}
                 </span>
-                <a
-                  className="horde-sprites__weapon"
-                  href={weaponUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {weapon}
-                </a>
               </figcaption>
             </figure>
           </li>
@@ -541,7 +651,7 @@ export function HordeSprites() {
         </ul>
       </section>
       <details className="horde-sprites__identities" open>
-        <summary>Classic Era Class Sprites</summary>
+        <summary>Expand To View More Horde Sprites</summary>
         <div className="horde-sprites__viewer">
           <div className="horde-sprites__viewer-toolbar">
             <label className="horde-sprites__display">
@@ -594,16 +704,19 @@ export function HordeSprites() {
                       key={id}
                       className="horde-sprites__filter-button horde-sprites__tier-button"
                       type="button"
+                      title={`${label} · ${tierArtwork[id].location} artwork`}
+                      style={{
+                        backgroundImage: `url("${tierArtwork[id].src}")`,
+                      }}
                       aria-controls="sprite-viewer-content"
                       aria-pressed={selectedTier === id}
                       onClick={() => setSelectedTier(id)}
                     >
-                      <TierIcon id={id} />
                       <span>{label}</span>
                     </button>
                   ))}
               <button
-                className={`horde-sprites__filter-button horde-sprites__show-all${displayFormat === "set" ? " horde-sprites__tier-button" : ""}`}
+                className={`horde-sprites__filter-button horde-sprites__show-all${displayFormat === "set" ? " horde-sprites__all-tiers" : ""}`}
                 type="button"
                 aria-controls="sprite-viewer-content"
                 aria-pressed={
@@ -617,7 +730,7 @@ export function HordeSprites() {
                     : setSelectedTier("all")
                 }
               >
-                {displayFormat === "set" && <TierIcon id="all" />}
+                {displayFormat === "set" && <ShowAllIcon />}
                 <span>Show all</span>
               </button>
             </div>

@@ -12,6 +12,7 @@ import {
 import { createRoot } from "react-dom/client";
 import { VoicePlayback } from "./voice-playback";
 import { HordeSprites } from "./horde-sprites";
+import { foreverLink } from "./helper-modules";
 import {
   AH_MARKET,
   GATHER_URL,
@@ -336,9 +337,11 @@ function PinnedItemsProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// Endpoint-specific views supply rows; this component owns every item card surface.
+// Shared item-card surface across gathering, crafting, lookup and pins
+// displayName overrides labels without changing the source ID or saved item
 function ItemCard({
   item,
+  displayName = item.name,
   metrics,
   icons,
   compact = false,
@@ -349,6 +352,7 @@ function ItemCard({
   lead,
 }: {
   item: { id: number; name: string; icon: string | null; url: string };
+  displayName?: string;
   metrics: {
     label: string;
     value: number | null;
@@ -388,14 +392,14 @@ function ItemCard({
               }}
             />
           )}
-          <Heading>{item.name}</Heading>
+          <Heading>{displayName}</Heading>
         </a>
         <a
           className="market-item-id"
-          href={`https://www.wowhead.com/forever/item=${item.id}`}
+          href={foreverLink.item(item.id)}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label={`View ${item.name}, item ${item.id}, on Wowhead`}
+          aria-label={`View ${displayName}, item ${item.id}, on Wowhead`}
         >
           ID: {item.id}
         </a>
@@ -422,7 +426,7 @@ function ItemCard({
           className="item-pin-button"
           type="button"
           aria-pressed={pinned}
-          aria-label={`${pinned ? "Unpin" : "Pin"} ${item.name}`}
+          aria-label={`${pinned ? "Unpin" : "Pin"} ${displayName}`}
           onClick={() => pinning.toggle(pin)}
         >
           {pinned ? "Pinned" : "Pin item"}

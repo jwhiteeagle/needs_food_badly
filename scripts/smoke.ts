@@ -13,6 +13,12 @@ assert.equal(
 const spriteFiles = [
   ...new Bun.Glob("*.png").scanSync(resolve(import.meta.dir, "../dist")),
 ];
+const tierArtworkFiles = [
+  ...new Bun.Glob("*_artwork-*.webp").scanSync(
+    resolve(import.meta.dir, "../dist"),
+  ),
+];
+assert.equal(tierArtworkFiles.length, 7, "Expected seven framed tier artworks");
 assert.equal(
   spriteFiles.length,
   7,
@@ -82,6 +88,16 @@ for (const basePath of ["/", "/needs_food_badly/"]) {
         (await response.arrayBuffer()).slice(0, 8),
       );
       assert.deepEqual([...signature], [137, 80, 78, 71, 13, 10, 26, 10]);
+    }
+    for (const name of tierArtworkFiles) {
+      const response = await fetch(new URL(name, url));
+      assert.equal(response.status, 200, `Missing tier artwork: ${name}`);
+      assert.match(response.headers.get("content-type") ?? "", /image\/webp/);
+      const header = new TextDecoder().decode(
+        (await response.arrayBuffer()).slice(0, 12),
+      );
+      assert.equal(header.slice(0, 4), "RIFF");
+      assert.equal(header.slice(8, 12), "WEBP");
     }
     await Promise.all(
       soundFiles.map(async (name) => {
