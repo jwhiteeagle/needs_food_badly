@@ -58,11 +58,51 @@
 }
 
 .soundboard {
+  position: relative;
   width: min(100%, 90rem);
   margin-inline: auto;
   padding: 1.5rem 1rem 0;
   display: grid;
   gap: 1.35rem;
+}
+/* Sits inside the header box's top-right corner: page padding plus a small inset */
+.github-link {
+  position: absolute;
+  top: calc(1.5rem + 0.5rem);
+  right: calc(1rem + 0.5rem);
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 4rem;
+  height: 4rem;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--muted);
+}
+.github-link svg {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+/* Back to compact on phones so it stays clear of the title */
+@media (max-width: 36rem) {
+  .github-link {
+    width: 2rem;
+    height: 2rem;
+  }
+  .github-link svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
+.github-link:hover {
+  border-color: var(--selected);
+  color: var(--selected);
+}
+/* Extends the touch target to roughly 44px without enlarging the button */
+.github-link::after {
+  content: "";
+  position: absolute;
+  inset: -0.4rem;
 }
 .widget-grid {
   display: grid;
@@ -197,6 +237,9 @@
 @media (max-width: 359px) {
   .soundboard {
     padding-inline: 0.75rem;
+  }
+  .github-link {
+    right: calc(0.75rem + 0.5rem);
   }
 }
 
