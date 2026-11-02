@@ -3,6 +3,7 @@ import {
   parseGatheringData,
   itemIconUrl,
   salesEstimate,
+  type GatherItem,
 } from "./market";
 
 const professionIcons = {
@@ -52,6 +53,20 @@ export function craftReturnPercent(
   if (recipe.cost <= 0) return null;
   const percent = Math.round((recipe.margin / recipe.cost) * 1000) / 10;
   return Number.isFinite(percent) ? percent || 0 : null;
+}
+
+// Output item as an item card; prices stay unknown until a tooltip refresh supplies them
+export function craftResultItem(recipe: CraftRecipe): GatherItem {
+  return {
+    id: recipe.result.id,
+    name: recipe.result.name,
+    icon: recipe.result.icon,
+    median: null,
+    minBuyout: null,
+    quantity: null,
+    observedAt: null,
+    salesPerDay: recipe.resultSalesPerDay,
+  };
 }
 
 const nonnegative = (value: unknown): value is number =>

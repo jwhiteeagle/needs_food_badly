@@ -14,7 +14,7 @@ export type SetReference = {
 
 // Bind the database version once so each public caller supplies only an ID
 function wowheadLinks(version: "classic" | "forever") {
-  function link(type: "item" | "item-set", id: number): string {
+  function link(type: "item" | "item-set" | "spell", id: number): string {
     if (!Number.isSafeInteger(id) || id <= 0) {
       throw new RangeError("Wowhead IDs must be positive integers");
     }
@@ -24,6 +24,7 @@ function wowheadLinks(version: "classic" | "forever") {
   return {
     item: (itemId: number) => link("item", itemId),
     set: (setId: number) => link("item-set", setId),
+    spell: (spellId: number) => link("spell", spellId),
   };
 }
 

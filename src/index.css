@@ -200,10 +200,15 @@
   }
 }
 
+.item-pin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+}
 .item-pin-button {
-  display: block;
   min-height: 2.25rem;
-  margin: 0.4rem auto 0;
   padding: 0.25rem 0.65rem;
   border: 1px solid var(--border);
   background: var(--card);
@@ -264,10 +269,87 @@
   width: 100%;
   max-width: var(--market-card-max-width);
 }
-.market-grid.pinned-grid {
+/* Shared widget shape: header over a centered, adaptive grid of item cards */
+.widget {
+  min-width: 0;
+  padding-inline: clamp(0.25rem, 1vw, 0.75rem);
+}
+.experiments > .widget {
+  margin-block: 0.75rem 1rem;
+}
+.widget-header {
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+.widget-title {
+  margin: 0 0 0.2rem;
+  color: var(--foreground);
+  font-size: 1.5rem;
+  font-weight: 650;
+  line-height: 1.2;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+.widget-subheading,
+.widget-description {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.3;
+}
+.widget-subheading {
+  font-size: 1rem;
+}
+.widget-description {
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+}
+.widget-body {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
-  justify-items: center;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(min(100%, 15rem), var(--market-card-max-width))
+  );
+  justify-content: center;
+  gap: 0.6rem;
+}
+.widget-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem 0.75rem;
+  margin-bottom: 0.75rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.widget-toolbar input {
+  width: min(100%, 14rem);
+  min-width: 0;
+  min-height: 2.75rem;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--foreground);
+  padding: 0.4rem 0.65rem;
+  font: inherit;
+}
+.widget-toolbar input::placeholder {
+  color: var(--muted);
+}
+.widget-group + .widget-group {
+  margin-top: 1.1rem;
+}
+.widget-group-title {
+  margin: 0 0 0.5rem;
+  color: var(--foreground);
+  font-size: 1.125rem;
+  font-weight: 650;
+  text-align: center;
+}
+.widget-divider {
+  width: 100%;
+  margin: 0;
+  border: 0;
+  border-top: 1px solid rgb(164 172 174 / 0.3);
 }
 .item-lookup {
   width: min(100%, 40rem);
@@ -314,9 +396,15 @@
 .market-item-title {
   min-width: 0;
 }
+.market-item-ids {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 0.75rem;
+  margin-top: 0.2rem;
+}
 .market-item-id {
   display: block;
-  margin-top: 0.2rem;
   color: var(--muted);
   font-size: 0.7rem;
   line-height: 1.2;
@@ -527,7 +615,6 @@
   padding-inline: clamp(0.25rem, 1vw, 0.75rem);
   margin-block: 0.75rem 1rem;
 }
-.market-card-section-headed > h3,
 .craft-margins-header > h3 {
   margin: 0 0 0.2rem;
   text-align: center;
@@ -536,12 +623,6 @@
   font-weight: 650;
   text-decoration: underline;
   text-underline-offset: 0.18em;
-}
-.market-card-section-headed > .section-subheading {
-  margin-bottom: 0.5rem;
-}
-#pinned-items-heading {
-  font-size: 1.5rem;
 }
 .market-card-note {
   margin: 0.35rem 0 0;

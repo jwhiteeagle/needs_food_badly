@@ -1,11 +1,5 @@
 import { expect, test } from "bun:test";
-import {
-  AH_MARKET,
-  formatMoney,
-  parseGatheringData,
-  parseDealsData,
-  itemIconUrl,
-} from "../src/market";
+import { formatMoney, parseGatheringData, itemIconUrl } from "../src/market";
 
 const item = {
   id: 2450,
@@ -69,12 +63,6 @@ test("reads optional sold/day estimates while retaining zero and treating empty 
       response([{ ...item, salesPerDay: value }]),
     );
     expect(parsed[0]?.salesPerDay).toBe(expected);
-    expect(
-      parseDealsData({
-        ...dealsResponse,
-        deals: [{ ...deal, salesPerDay: value }],
-      }).deals[0]?.salesPerDay,
-    ).toBe(expected);
   }
 });
 
@@ -121,78 +109,4 @@ test("looks up a requested item outside the watchlist without accepting other it
       [2447],
     ),
   ).toThrow("Unexpected market");
-});
-
-const deal = {
-  item: {
-    id: 2447,
-    name: "Peacebloom",
-    url: "https://ahledger.com/items/2447-peacebloom/forever.pvp.horde.us?utm_source=ahledger_api",
-  },
-  minBuyout: 100,
-  median30d: 200,
-  discount: 0.5,
-  quantity: 12,
-  salesPerDay: null,
-};
-const dealsResponse = {
-  market: AH_MARKET,
-  deals: [deal],
-  pricesAsOf: "2026-10-21T16:25:06Z",
-  attribution: {
-    url: "https://ahledger.com/deals?market=forever/pvp/horde/us&utm_source=ahledger_api",
-  },
-};
-
-test("preserves deal attribution and scan age while distinguishing unknown prices from zero", () => {
-  const parsed = parseDealsData({
-    ...dealsResponse,
-    deals: [
-      {
-        ...deal,
-        minBuyout: 0,
-        median30d: null,
-        discount: null,
-        quantity: null,
-      },
-    ],
-  });
-  expect(parsed.attributionUrl).toBe(dealsResponse.attribution.url);
-  expect(parsed.pricesAsOf).toBe(dealsResponse.pricesAsOf);
-  expect(parsed.deals[0]?.item.url).toBe(deal.item.url);
-  expect(parsed.deals[0]?.minBuyout).toBe(0);
-  expect(parsed.deals[0]?.median30d).toBeNull();
-  expect(
-    parseDealsData({ ...dealsResponse, deals: [], pricesAsOf: null }).deals,
-  ).toEqual([]);
-});
-
-test("rejects another market or malformed deal prices and avoids unsafe outbound links", () => {
-  expect(() =>
-    parseDealsData({ ...dealsResponse, market: "forever/pvp/alliance/us" }),
-  ).toThrow("Unexpected market");
-  expect(() =>
-    parseDealsData({ ...dealsResponse, pricesAsOf: "invalid" }),
-  ).toThrow("Invalid scan timestamp");
-  for (const change of [
-    { minBuyout: -1 },
-    { discount: 2 },
-    { quantity: "12" },
-  ]) {
-    expect(() =>
-      parseDealsData({ ...dealsResponse, deals: [{ ...deal, ...change }] }),
-    ).toThrow("Invalid deal data");
-  }
-  const parsed = parseDealsData({
-    ...dealsResponse,
-    attribution: { url: "javascript:alert(1)" },
-    deals: [
-      {
-        ...deal,
-        item: { ...deal.item, url: "https://ahledger.com.evil.test/" },
-      },
-    ],
-  });
-  expect(parsed.attributionUrl).toStartWith("https://ahledger.com/");
-  expect(parsed.deals[0]?.item.url).toStartWith("https://ahledger.com/");
 });

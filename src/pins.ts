@@ -1,23 +1,15 @@
-import {
-  AH_MARKET,
-  parseDealsData,
-  parseGatheringData,
-  itemIconUrl,
-  type GatherItem,
-  type MarketDeal,
-} from "./market";
+import { AH_MARKET, parseGatheringData, type GatherItem } from "./market";
 import { craftingUrl, parseCraftingData, type CraftRecipe } from "./crafting";
 
-export const PINS_STORAGE_KEY = `needs-food-badly:pins:v1:${AH_MARKET}`;
-export type PinnedItem =
+// v2 adds categories and drops the retired deals source; v1 entries are not migrated
+export const PINS_STORAGE_KEY = `needs-food-badly:pins:v2:${AH_MARKET}`;
+export const MAX_PINS = 100;
+export const DEFAULT_GROUP = "Favorites";
+export const MAX_GROUP_LENGTH = 40;
+
+// What a card offers to pin; the saved pin adds the user's category
+export type PinSource =
   | { id: number; source: "tooltip"; data: GatherItem }
-  | {
-      id: number;
-      source: "deal";
-      data: MarketDeal;
-      observedAt: string | null;
-      attributionUrl: string;
-    }
   | {
       id: number;
       source: "craft";
@@ -25,6 +17,35 @@ export type PinnedItem =
       observedAt: string | null;
       attributionUrl: string;
     };
+export type PinnedItem = PinSource & { group: string };
+
+// An item and a craft for the same output are separate pins
+export const pinKey = (pin: PinSource) =>
+  pin.source === "craft"
+    ? `craft:${pin.data.recipe.spellId}`
+    : `item:${pin.id}`;
+
+// Categories are plain trimmed names; blank input falls back to the default
+export function normalizeGroup(value: unknown): string {
+  const name =
+    typeof value === "string"
+      ? value.replace(/\s+/g, " ").trim().slice(0, MAX_GROUP_LENGTH).trim()
+      : "";
+  return name || DEFAULT_GROUP;
+}
+
+// Group order follows each group's first pin, so saved order is display order
+export function groupPins(
+  pins: PinnedItem[],
+): { name: string; pins: PinnedItem[] }[] {
+  const groups = new Map<string, PinnedItem[]>();
+  for (const pin of pins) {
+    const members = groups.get(pin.group);
+    if (members) members.push(pin);
+    else groups.set(pin.group, [pin]);
+  }
+  return [...groups].map(([name, members]) => ({ name, pins: members }));
+}
 
 // Restore only this market's validated snapshots; one damaged entry cannot erase the rest.
 export function parseSavedPins(raw: string | null): PinnedItem[] {
@@ -33,13 +54,14 @@ export function parseSavedPins(raw: string | null): PinnedItem[] {
     if (saved?.market !== AH_MARKET || !Array.isArray(saved.items)) return [];
     const pins: PinnedItem[] = [];
     for (const entry of saved.items) {
+      if (pins.length >= MAX_PINS) break;
       try {
-        if (
-          !Number.isSafeInteger(entry?.id) ||
-          entry.id < 1 ||
-          pins.some((pin) => pin.id === entry.id)
-        )
-          continue;
+        if (!Number.isSafeInteger(entry?.id) || entry.id < 1) continue;
+        const group = normalizeGroup(entry.group);
+        const add = (pin: PinnedItem) => {
+          if (!pins.some((saved) => pinKey(saved) === pinKey(pin)))
+            pins.push(pin);
+        };
         if (entry.source === "tooltip" && entry.data?.id === entry.id) {
           const [data] = parseGatheringData(
             {
@@ -48,27 +70,7 @@ export function parseSavedPins(raw: string | null): PinnedItem[] {
             },
             [entry.id],
           );
-          if (data) pins.push({ id: entry.id, source: "tooltip", data });
-        } else if (
-          entry.source === "deal" &&
-          entry.data?.item?.id === entry.id
-        ) {
-          const parsed = parseDealsData({
-            market: AH_MARKET,
-            deals: [entry.data],
-            pricesAsOf: entry.observedAt,
-            attribution: { url: entry.attributionUrl },
-          });
-          const data = parsed.deals[0]!;
-          const icon = entry.data.item.icon;
-          data.item.icon = itemIconUrl(icon);
-          pins.push({
-            id: entry.id,
-            source: "deal",
-            data,
-            observedAt: parsed.pricesAsOf,
-            attributionUrl: parsed.attributionUrl,
-          });
+          if (data) add({ id: entry.id, source: "tooltip", data, group });
         } else if (
           entry.source === "craft" &&
           entry.data?.result?.id === entry.id
@@ -85,12 +87,13 @@ export function parseSavedPins(raw: string | null): PinnedItem[] {
           );
           const data = parsed.recipes[0];
           if (data)
-            pins.push({
+            add({
               id: entry.id,
               source: "craft",
               data,
               observedAt: parsed.pricesAsOf,
               attributionUrl: parsed.attributionUrl,
+              group,
             });
         }
       } catch {
@@ -103,82 +106,37 @@ export function parseSavedPins(raw: string | null): PinnedItem[] {
   }
 }
 
+// Unpins a saved key, otherwise appends to the category unless the pin limit is reached
 export function togglePinnedItem(
   pins: PinnedItem[],
-  item: PinnedItem,
+  item: PinSource,
+  group: string = DEFAULT_GROUP,
 ): PinnedItem[] {
-  return pins.some((pin) => pin.id === item.id)
-    ? pins.filter((pin) => pin.id !== item.id)
-    : [...pins, item];
+  const key = pinKey(item);
+  if (pins.some((pin) => pinKey(pin) === key))
+    return pins.filter((pin) => pinKey(pin) !== key);
+  if (pins.length >= MAX_PINS) return pins;
+  // Reuse an existing category's spelling so "armor" cannot split "Armor"
+  const name = normalizeGroup(group);
+  const existing = pins.find(
+    (pin) => pin.group.toLowerCase() === name.toLowerCase(),
+  );
+  return [...pins, { ...item, group: existing?.group ?? name }];
 }
 
+// Refreshed data replaces a card's snapshot but never its category
 export function mergePinnedUpdates(
   pins: PinnedItem[],
-  updates: PinnedItem[],
+  updates: PinSource[],
 ): PinnedItem[] {
-  const byId = new Map(updates.map((pin) => [pin.id, pin]));
+  const byKey = new Map(updates.map((pin) => [pinKey(pin), pin]));
   return pins.map((pin) => {
-    const update = byId.get(pin.id);
-    if (update?.source !== pin.source) return pin;
-    if (
-      pin.source === "craft" &&
-      update.source === "craft" &&
-      pin.data.recipe.spellId !== update.data.recipe.spellId
-    )
-      return pin;
-    return update;
+    const update = byKey.get(pinKey(pin));
+    return update ? { ...update, group: pin.group } : pin;
   });
 }
 
-export function refreshPinnedDeal(
-  pin: Extract<PinnedItem, { source: "deal" }>,
-  value: unknown,
-): PinnedItem {
-  if (!value || typeof value !== "object")
-    throw new Error("Invalid price response");
-  const data = value as {
-    market?: unknown;
-    item?: { id?: unknown };
-    latest?: Record<string, unknown> | null;
-    attribution?: { url?: unknown };
-    sales?: { estimatedPerDay?: unknown };
-  };
-  if (data.market !== AH_MARKET || data.item?.id !== pin.id)
-    throw new Error("Unexpected item or market");
-  if (data.latest !== null && (!data.latest || typeof data.latest !== "object"))
-    throw new Error("Invalid latest price");
-  const latest = data.latest;
-  const buyout = latest === null ? null : latest.minBuyout;
-  const baseline = latest === null ? null : latest.median30d;
-  const discount =
-    typeof buyout === "number" && typeof baseline === "number" && baseline > 0
-      ? Math.max(0, 1 - buyout / baseline)
-      : null;
-  const parsed = parseDealsData({
-    market: data.market,
-    pricesAsOf: latest === null ? null : latest.observedAt,
-    attribution: data.attribution ?? { url: pin.attributionUrl },
-    deals: [
-      {
-        ...pin.data,
-        minBuyout: buyout,
-        median30d: baseline,
-        discount,
-        quantity: latest === null ? null : latest.quantity,
-        salesPerDay: latest === null ? null : data.sales?.estimatedPerDay,
-      },
-    ],
-  });
-  const deal = parsed.deals[0]!;
-  return {
-    ...pin,
-    data: { ...deal, item: { ...deal.item, icon: pin.data.item.icon } },
-    observedAt: parsed.pricesAsOf,
-    attributionUrl: parsed.attributionUrl,
-  };
-}
-
-// Bulk tooltip refreshes for ordinary items; individual prices retain a deal's 30-day fields.
+// Bulk tooltip refreshes for ordinary items; craft pins refresh once per profession.
 export async function refreshPinnedItems(
   pins: PinnedItem[],
   signal: AbortSignal,
@@ -190,7 +148,7 @@ export async function refreshPinnedItems(
     if (!response.ok) throw new Error("Pinned item refresh failed");
     return response.json();
   }
-  const jobs: Promise<PinnedItem[]>[] = [];
+  const jobs: Promise<PinSource[]>[] = [];
   const ordinary = pins.filter((pin) => pin.source === "tooltip");
   for (let offset = 0; offset < ordinary.length; offset += 100) {
     const batch = ordinary.slice(offset, offset + 100);
@@ -207,15 +165,6 @@ export async function refreshPinnedItems(
         }));
       }),
     );
-  }
-  for (const pin of pins) {
-    if (pin.source === "deal") {
-      jobs.push(
-        get(
-          `https://api.ahledger.com/v1/prices/${AH_MARKET}/${pin.id}?range=7d`,
-        ).then((value) => [refreshPinnedDeal(pin, value)]),
-      );
-    }
   }
   const craftPins = pins.filter((pin) => pin.source === "craft");
   for (const profession of new Set(

@@ -59,6 +59,10 @@ test("links completed armor sets while generic art props remain unlinked and lab
   expect(foreverLink.set(218)).toBe(
     "https://www.wowhead.com/forever/item-set=218",
   );
+  expect(foreverLink.spell(2018)).toBe(
+    "https://www.wowhead.com/forever/spell=2018",
+  );
+  expect(() => foreverLink.spell(0)).toThrow(RangeError);
 });
 
 test("catalog references retain names and valid IDs as catalogs grow", () => {

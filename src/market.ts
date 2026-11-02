@@ -28,95 +28,11 @@ export function itemIconUrl(value: unknown): string | null {
     : null;
 }
 
-// Existing deal pins remain readable after replacing the deals feed with crafting.
-export type MarketDeal = {
-  item: { id: number; name: string; url: string; icon: string | null };
-  minBuyout: number | null;
-  median30d: number | null;
-  discount: number | null;
-  quantity: number | null;
-  salesPerDay: number | null;
-};
-
-export type DealsData = {
-  deals: MarketDeal[];
-  pricesAsOf: string | null;
-  attributionUrl: string;
-};
-
 function availableNumber(value: unknown): value is number | null {
   return (
     value === null ||
     (typeof value === "number" && Number.isFinite(value) && value >= 0)
   );
-}
-
-function ahledgerUrl(value: unknown, fallback: string): string {
-  return typeof value === "string" && value.startsWith("https://ahledger.com/")
-    ? value
-    : fallback;
-}
-
-export function parseDealsData(value: unknown): DealsData {
-  if (!value || typeof value !== "object")
-    throw new Error("Invalid deals response");
-  const data = value as {
-    market?: unknown;
-    marketStatus?: unknown;
-    deals?: MarketDeal[];
-    pricesAsOf?: unknown;
-    attribution?: { url?: unknown };
-  };
-  if (data.market !== AH_MARKET) throw new Error("Unexpected market");
-  if (!Array.isArray(data.deals)) throw new Error("Missing deals");
-  const pricesAsOf = data.pricesAsOf ?? null;
-  if (
-    pricesAsOf !== null &&
-    (typeof pricesAsOf !== "string" || !Number.isFinite(Date.parse(pricesAsOf)))
-  ) {
-    throw new Error("Invalid scan timestamp");
-  }
-  const deals = data.deals.slice(0, 5).map((deal) => {
-    if (
-      !deal ||
-      typeof deal !== "object" ||
-      !deal.item ||
-      !Number.isSafeInteger(deal.item.id) ||
-      deal.item.id < 1 ||
-      typeof deal.item.name !== "string" ||
-      !availableNumber(deal.minBuyout) ||
-      !availableNumber(deal.median30d) ||
-      !availableNumber(deal.quantity) ||
-      !availableNumber(deal.discount) ||
-      (deal.discount !== null && deal.discount > 1)
-    ) {
-      throw new Error("Invalid deal data");
-    }
-    return {
-      item: {
-        id: deal.item.id,
-        name: deal.item.name,
-        icon: null,
-        url: ahledgerUrl(
-          deal.item.url,
-          `https://ahledger.com/items/${deal.item.id}?market=forever/pvp/horde/us`,
-        ),
-      },
-      minBuyout: deal.minBuyout,
-      median30d: deal.median30d,
-      discount: deal.discount,
-      quantity: deal.quantity,
-      salesPerDay: salesEstimate(deal.salesPerDay),
-    };
-  });
-  return {
-    deals,
-    pricesAsOf,
-    attributionUrl: ahledgerUrl(
-      data.attribution?.url,
-      "https://ahledger.com/deals?market=forever/pvp/horde/us",
-    ),
-  };
 }
 
 export function parseGatheringData(

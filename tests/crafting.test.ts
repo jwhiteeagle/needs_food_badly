@@ -219,6 +219,7 @@ test("restores craft pins and refreshes a recipe below the top three using one r
     data: data.recipes[0]!,
     observedAt: data.pricesAsOf,
     attributionUrl: data.attributionUrl,
+    group: "Favorites",
   };
   const second: typeof pin = {
     ...pin,

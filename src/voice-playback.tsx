@@ -324,17 +324,22 @@ const styles = `
   font-size: 1rem;
   line-height: 1.3;
 }
+/* Play stays in the middle track; links fill tracks either side, so uneven flank counts cannot shift it */
 .voice-lines .voice-action-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 2.25fr) minmax(0, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr)) minmax(0, 2.25fr) repeat(2, minmax(0, 1fr));
   align-items: center;
   justify-items: center;
   gap: clamp(0.35rem, 1.5vw, 0.75rem);
-  width: min(100%, 42rem);
+  width: min(100%, 52rem);
 }
 @media (max-width: 36rem) {
   .voice-lines .voice-action-row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .voice-lines .voice-action-row .play-button {
+    grid-column: 1 / -1;
+    order: -1;
   }
 }
 .voice-lines .widget-jump {
@@ -342,7 +347,8 @@ const styles = `
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 2.25rem;
+  /* Two text lines (2 x 1.15em) plus padding and border, so one-line labels match wrapped ones */
+  min-height: calc(2.3em + 0.6rem + 2px);
   padding: 0.3rem 0.5rem;
   border: 1px solid var(--border);
   background: var(--card);
@@ -642,13 +648,7 @@ export function VoicePlayback({ children }: { children: ReactNode }) {
           <a
             className="widget-jump"
             href="#sprite-browser"
-            aria-label="Open and jump to the sprite browser"
-            aria-controls="sprite-browser"
-            onClick={() => {
-              const browser = document.getElementById("sprite-browser");
-              // Open before native fragment navigation measures the scroll destination
-              if (browser instanceof HTMLDetailsElement) browser.open = true;
-            }}
+            aria-label="Jump to the sprite browser"
           >
             Sprite Browser
           </a>
@@ -667,9 +667,16 @@ export function VoicePlayback({ children }: { children: ReactNode }) {
           <a
             className="widget-jump"
             href="#gathering-heading"
-            aria-label="Jump to auction house data scraping"
+            aria-label="Jump to auction house crafting data"
           >
-            AH Data Scraping
+            AH Crafting Data
+          </a>
+          <a
+            className="widget-jump"
+            href="#gathering-prices-heading"
+            aria-label="Jump to the gathering watchlist"
+          >
+            Gathering Watchlist
           </a>
         </div>
         <button
