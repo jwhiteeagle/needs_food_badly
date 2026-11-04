@@ -160,22 +160,10 @@ const classGroups = classIdentities.items.map(({ characterClass }) => ({
 // Keep this independent of reservations; repeated class sprites are intentional.
 const characterDisplays = [
   {
-    displayName: "Red Minotaur",
-    characterClass: "Druid",
-    color: "#FF7D0A",
-    setId: "raid-tier-2",
-  },
-  {
-    displayName: "Green Wizard",
-    characterClass: "Mage",
-    color: "#69CCF0",
-    setId: "pvp-epic",
-  },
-  {
-    displayName: "Green Warrior",
-    characterClass: "Warrior",
-    color: "#C79C6E",
-    setId: "raid-tier-2",
+    displayName: "Green Rogue",
+    characterClass: "Rogue",
+    color: "#FFF569",
+    setId: "dungeon-set-1",
   },
   {
     displayName: "Green Archer",
@@ -199,12 +187,6 @@ const characterDisplays = [
     displayName: "Trolger Allaboutcrit",
     characterClass: "Hunter",
     color: "#ABD473",
-    setId: "dungeon-set-1",
-  },
-  {
-    displayName: "Excedrine Allaboutcrit",
-    characterClass: "Priest",
-    color: "#FFFFFF",
     setId: "dungeon-set-1",
   },
 ] as const;
