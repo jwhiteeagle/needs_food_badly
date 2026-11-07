@@ -636,12 +636,6 @@ export function VoicePlayback({ children }: { children: ReactNode }) {
       >
         <div className="voice-tagline">
           <h2>Social WoW Forever Guild - PvP Horde</h2>
-          <p>
-            <em>
-              &quot;Hey, I remember that guy! I played with him that one
-              time!&quot;
-            </em>
-          </p>
         </div>
         <hr className="voice-tagline-divider" />
         <div className="voice-action-row">
@@ -654,7 +648,7 @@ export function VoicePlayback({ children }: { children: ReactNode }) {
           </a>
           <a
             className="widget-jump"
-            href="#reservations-heading"
+            href="#main-characters-heading"
             aria-label="Jump to character reservations"
           >
             Roster

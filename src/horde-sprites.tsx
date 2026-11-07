@@ -54,12 +54,12 @@ const spriteSets = [
   { id: "pvp-epic", label: "PvP Epic (Horde)", collection: pvpEpicIdentities },
   { id: "pvp-rare", label: "PvP Rare (Horde)", collection: pvpRareIdentities },
   {
-    id: "dungeon-set-2",
+    id: "dungeon-tier-2",
     label: "Dungeon Tier 2",
     collection: dungeonTwoIdentities,
   },
   {
-    id: "dungeon-set-1",
+    id: "dungeon-tier-1",
     label: "Dungeon Tier 1",
     collection: dungeonOneIdentities,
   },
@@ -87,13 +87,13 @@ type GallerySprite = SpriteCatalog["items"][number] & {
 // Framed journal art: https://wow.zamimg.com/images/wow/journal/ui-ej-lorebg-<location>.png
 // Alpha padding trimmed, whole frame resized to 256px square; PvP uses visual stand-ins
 const tierArtwork = {
-  "dungeon-set-1": {
+  "dungeon-tier-1": {
     src: dungeonOneArtwork,
     location: "Scholomance",
     source: "scholomance",
     fileDataId: 608254,
   },
-  "dungeon-set-2": {
+  "dungeon-tier-2": {
     src: dungeonTwoArtwork,
     location: "Blackrock Depths",
     source: "blackrockdepths",
@@ -163,7 +163,7 @@ const characterDisplays = [
     displayName: "Green Rogue",
     characterClass: "Rogue",
     color: "#FFF569",
-    setId: "dungeon-set-1",
+    setId: "dungeon-tier-1",
   },
   {
     displayName: "Green Archer",
@@ -178,7 +178,7 @@ const characterDisplays = [
     setId: "raid-tier-2",
   },
   {
-    displayName: "Apox Apox",
+    displayName: "Apoc Ulipse",
     characterClass: "Hunter",
     color: "#ABD473",
     setId: "raid-tier-2",
@@ -187,7 +187,19 @@ const characterDisplays = [
     displayName: "Trolger Allaboutcrit",
     characterClass: "Hunter",
     color: "#ABD473",
-    setId: "dungeon-set-1",
+    setId: "dungeon-tier-1",
+  },
+  {
+    displayName: "Moo Zilal",
+    characterClass: "Druid",
+    color: "#FF7D0A",
+    setId: "raid-tier-2",
+  },
+  {
+    displayName: "Nibcab Cabnib",
+    characterClass: "Paladin",
+    color: "#F58CBA",
+    setId: "raid-tier-1",
   },
 ] as const;
 
@@ -589,12 +601,12 @@ export function HordeSprites() {
     <section className="horde-sprites" aria-label="Horde adventurers">
       <style>{styles}</style>
       <h2 id="main-characters-heading" className="horde-sprites__main-heading">
-        Main Characters - "Capital G Gamers"
+        Active Members
       </h2>
       <p className="horde-sprites__main-description">
         <em>
-          Planning on playing a &quot;lot&quot;? Reach out to Jake with a sprite
-          request to be added.
+          Want specific gear on your sprite? Reach out to Jake with requests or
+          leave a comment in the guild discord.
         </em>
       </p>
       <ul
@@ -615,7 +627,8 @@ export function HordeSprites() {
           id="tirekickers-sprites-heading"
           className="horde-sprites__tirekickers-heading"
         >
-          Tirekickers - "I dunno man, I'll prob check it out."
+          Tirekickers - "I dunno man, I'll prob check it out, but I don't know
+          how much I can play."
         </h2>
         <ul className="horde-sprites__lineup horde-sprites__tirekicker-lineup">
           {tirekickerClasses.map((characterClass, index) => {
@@ -646,8 +659,12 @@ export function HordeSprites() {
           Custom Horde Sprites
         </h2>
         <p className="horde-sprites__gallery-description">
-          Cool sprites wearing the gear you wish you had. Clickable wowhead
-          links for sets and weapons.
+          Custom sprites, sortable by Class or Tier.
+        </p>
+        <h2></h2>
+        <p className="horde-sprites__gallery-description">
+          All sprites have clickable wowhead links for their displayed sets and
+          weapons.
         </p>
         <div className="horde-sprites__toolbar">
           <label className="horde-sprites__display">

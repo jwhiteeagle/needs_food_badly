@@ -235,15 +235,16 @@ function PinnedItems({ icons }: { icons: boolean }) {
       headingId="pinned-items-heading"
       description={
         <>
-          Want to finally afford your own epic mount? Look up items by entering
-          the ID below and pin them for later.
+          Look up items by entering the item ID below. Pin them to save for
+          future re-checks.
+          <br />
           <br />
           Pin favorites from any of my pre-constructed item cards below.
         </>
       }
       toolbar={
         <>
-          <label htmlFor="pin-category">Pin new items to</label>
+          <label htmlFor="pin-category">Pin new items to: </label>
           <input
             id="pin-category"
             type="text"
@@ -344,11 +345,13 @@ export function PricingData() {
     <PinnedItemsProvider>
       <section className="experiments" aria-labelledby="gathering-heading">
         <header className="section-header">
-          <h2 id="gathering-heading">Cute Pricing Data</h2>
+          <h2 id="gathering-heading">AH Pricing Data</h2>
           <p className="section-subheading">
-            US PvP Horde - Click item ID to jump to wowhead link
+            Click item ID to jump to wowhead link of the item.
           </p>
-          <p className="section-subheading">Live data populates after Launch</p>
+          <p className="section-subheading">
+            Live data repopulates and updates scan tags.
+          </p>
           <label className="coin-toggle">
             <input
               type="checkbox"
