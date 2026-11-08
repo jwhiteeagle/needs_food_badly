@@ -166,6 +166,12 @@ const characterDisplays = [
     setId: "dungeon-tier-1",
   },
   {
+    displayName: "Gray Witch",
+    characterClass: "Priest",
+    color: "#FFFFFF",
+    setId: "raid-tier-2",
+  },
+  {
     displayName: "Green Archer",
     characterClass: "Hunter",
     color: "#ABD473",
