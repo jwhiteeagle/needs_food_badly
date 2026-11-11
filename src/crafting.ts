@@ -6,21 +6,24 @@ import {
   type GatherItem,
 } from "./market";
 
-const professionIcons = {
-  Alchemy: "trade_alchemy",
-  Blacksmithing: "trade_blacksmithing",
-  Cooking: "inv_misc_food_15",
-  Engineering: "trade_engineering",
-  Leatherworking: "trade_leatherworking",
-  Mining: "trade_mining",
-  Tailoring: "trade_tailoring",
-};
-export const CRAFT_PROFESSIONS = Object.entries(professionIcons).map(
-  ([name, icon]) => ({
-    name,
-    icon: `https://render.worldofwarcraft.com/us/icons/56/${icon}.jpg`,
-  }),
-);
+import { ahLedgerFetch } from "./ahledger-client";
+import { professions, type ProfessionName } from "./identity-and-icons";
+
+// AH grid selection stays local; shared identities include all Classic professions
+const activeCraftProfessions = [
+  "Alchemy",
+  "Blacksmithing",
+  "Cooking",
+  "Engineering",
+  "Leatherworking",
+  "Mining",
+  "Tailoring",
+] as const satisfies readonly ProfessionName[];
+
+export const CRAFT_PROFESSIONS = activeCraftProfessions.map((name) => ({
+  name,
+  icon: professions[name].icon,
+}));
 export const craftingUrl = (profession: string) =>
   `https://api.ahledger.com/v1/crafting/${AH_MARKET}?profession=${encodeURIComponent(profession)}&limit=500`;
 
@@ -205,7 +208,7 @@ export async function fetchCraftIcons(
   const ids = data.recipes.slice(0, 3).map((recipe) => recipe.result.id);
   if (!ids.length) return data;
   try {
-    const response = await fetch(
+    const response = await ahLedgerFetch(
       `https://api.ahledger.com/v1/tooltip/${AH_MARKET}?items=${ids.join(",")}`,
       { signal: AbortSignal.any([signal, AbortSignal.timeout(5000)]) },
     );

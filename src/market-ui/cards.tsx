@@ -7,6 +7,7 @@ import {
   useState,
 } from "react";
 import { foreverLink } from "../helper-modules";
+import { ahLedgerFetch } from "../ahledger-client";
 import { AH_MARKET, formatMoney, type GatherItem } from "../market";
 import {
   craftResultItem,
@@ -15,7 +16,7 @@ import {
 } from "../crafting";
 import { pinKey, type PinSource, type PinnedItem } from "../pins";
 
-function Price({ value, icons }: { value: number | null; icons: boolean }) {
+function Price({ value }: { value: number | null }) {
   if (value === null) return "—";
   const currencies: Record<string, string> = {
     g: "gold",
@@ -35,13 +36,7 @@ function Price({ value, icons }: { value: number | null; icons: boolean }) {
               key={unit}
             >
               {part.slice(0, -1)}
-              {icons ? (
-                <span className="money-coin" aria-hidden="true" />
-              ) : (
-                <span className="money-label" aria-hidden="true">
-                  {unit}
-                </span>
-              )}
+              <span className="money-coin" aria-hidden="true" />
               <span className="sr-only"> {currencies[unit]} </span>
             </span>
           );
@@ -69,7 +64,6 @@ function ItemCard({
   item,
   displayName = item.name,
   metrics,
-  icons,
   compact = false,
   heading: Heading = "h3",
   note,
@@ -86,7 +80,6 @@ function ItemCard({
     format: "money" | "number";
     fallback?: string;
   }[];
-  icons: boolean;
   compact?: boolean;
   heading?: "h3" | "h4" | "h5";
   note?: string;
@@ -147,7 +140,7 @@ function ItemCard({
             <dt>{label}</dt>
             <dd data-negative={value !== null && value < 0}>
               {format === "money" ? (
-                <Price value={value} icons={icons} />
+                <Price value={value} />
               ) : (
                 (value?.toLocaleString() ?? fallback)
               )}
@@ -188,13 +181,11 @@ function ItemCard({
 
 export function MarketItem({
   item,
-  icons,
   checkedAt,
   compact = false,
   heading = "h3",
 }: {
   item: GatherItem;
-  icons: boolean;
   checkedAt: number;
   compact?: boolean;
   heading?: "h3" | "h4" | "h5";
@@ -219,7 +210,6 @@ export function MarketItem({
           fallback: "-",
         },
       ]}
-      icons={icons}
       compact={compact}
       heading={heading}
       pins={[
@@ -271,12 +261,12 @@ export function useMarketFeed<T>(
       if (pending || document.hidden) return;
       pending = true;
       try {
-        // Default HTTP caching honors AHledger's Cache-Control; no keys or proxy.
+        // Browser caching honors AHledger's Cache-Control; keys are optional
         const signal = AbortSignal.any([
           controller.signal,
           AbortSignal.timeout(15000),
         ]);
-        const response = await fetch(url, { signal });
+        const response = await ahLedgerFetch(url, { signal });
         if (!response.ok) throw new Error("Market request failed");
         const parsed = parse(await response.json());
         const next = enrich ? await enrich(parsed, controller.signal) : parsed;
@@ -320,7 +310,6 @@ export function useMarketFeed<T>(
 
 export function CraftItem({
   recipe,
-  icons,
   observedAt,
   attributionUrl,
   checkedAt,
@@ -328,7 +317,6 @@ export function CraftItem({
   showScan = false,
 }: {
   recipe: CraftRecipe;
-  icons: boolean;
   observedAt: string | null;
   attributionUrl: string;
   checkedAt: number;
@@ -342,7 +330,6 @@ export function CraftItem({
     <ItemCard
       item={recipe.result}
       heading={heading}
-      icons={icons}
       metrics={[
         { label: "Margin / craft", value: recipe.margin, format: "money" },
         { label: "Reagent cost", value: recipe.cost, format: "money" },

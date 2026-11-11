@@ -18,11 +18,9 @@ type CraftScan = {
 // One profession header and its ranked cards stay together as a grid item
 function ProfessionBlock({
   profession,
-  icons,
   onScan,
 }: {
   profession: (typeof CRAFT_PROFESSIONS)[number];
-  icons: boolean;
   onScan: (profession: string, scan: CraftScan) => void;
 }) {
   const parse = useCallback(
@@ -87,7 +85,6 @@ function ProfessionBlock({
           <CraftItem
             key={recipe.recipe.spellId}
             recipe={recipe}
-            icons={icons}
             observedAt={data!.pricesAsOf}
             attributionUrl={data!.attributionUrl}
             checkedAt={checkedAt}
@@ -98,7 +95,7 @@ function ProfessionBlock({
   );
 }
 
-export function ProfessionCraftMargins({ icons }: { icons: boolean }) {
+export function ProfessionCraftMargins() {
   const [scans, setScans] = useState<Record<string, CraftScan>>({});
   const onScan = useCallback((profession: string, scan: CraftScan) => {
     setScans((previous) => ({ ...previous, [profession]: scan }));
@@ -160,7 +157,6 @@ export function ProfessionCraftMargins({ icons }: { icons: boolean }) {
           <ProfessionBlock
             key={profession.name}
             profession={profession}
-            icons={icons}
             onScan={onScan}
           />
         ))}

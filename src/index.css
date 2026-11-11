@@ -680,35 +680,6 @@
   text-decoration: underline;
   text-underline-offset: 0.15em;
 }
-.experiments .section-header {
-  position: relative;
-  padding-inline: 5rem;
-}
-.coin-toggle {
-  position: absolute;
-  top: 0.15rem;
-  right: 0.35rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  min-height: 2.75rem;
-  padding-inline: 0.5rem;
-  color: var(--muted);
-  font-size: 0.8rem;
-  cursor: pointer;
-}
-.coin-toggle input {
-  width: 1rem;
-  height: 1rem;
-  accent-color: var(--selected);
-  cursor: inherit;
-}
-@container (max-width: 40rem) {
-  .experiments .section-header {
-    padding-inline: 1rem;
-    padding-top: 2.75rem;
-  }
-}
 .money {
   display: inline-flex;
   flex-wrap: wrap;
@@ -729,10 +700,6 @@
 }
 .money-denomination[data-currency="c"] {
   --coin-color: #d99b72;
-}
-.money-label {
-  color: var(--coin-color);
-  font-weight: 700;
 }
 .money-coin {
   position: relative;

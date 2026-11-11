@@ -28,6 +28,7 @@ import {
 import { Widget } from "../widget";
 import { CraftItem, MarketItem, PinsContext, useMarketFeed } from "./cards";
 import { ProfessionCraftMargins } from "./craft-margins";
+import { ahLedgerFetch } from "../ahledger-client";
 
 function PinnedItemsProvider({ children }: { children: ReactNode }) {
   const [saved, setSaved] = useState(() => {
@@ -131,7 +132,7 @@ function PinnedItemsProvider({ children }: { children: ReactNode }) {
   );
 }
 
-function ItemLookup({ icons }: { icons: boolean }) {
+function ItemLookup() {
   const [itemId, setItemId] = useState("");
   const [result, setResult] = useState<{
     item: GatherItem;
@@ -161,7 +162,7 @@ function ItemLookup({ icons }: { icons: boolean }) {
     setPending(true);
     setMessage("");
     try {
-      const response = await fetch(
+      const response = await ahLedgerFetch(
         `https://api.ahledger.com/v1/tooltip/${AH_MARKET}?items=${id}`,
         {
           signal: AbortSignal.any([
@@ -213,12 +214,7 @@ function ItemLookup({ icons }: { icons: boolean }) {
       <div aria-live="polite" aria-busy={pending}>
         {message && <p className="market-message">{message}</p>}
         {result && (
-          <MarketItem
-            item={result.item}
-            checkedAt={result.checkedAt}
-            icons={icons}
-            compact
-          />
+          <MarketItem item={result.item} checkedAt={result.checkedAt} compact />
         )}
       </div>
     </div>
@@ -226,7 +222,7 @@ function ItemLookup({ icons }: { icons: boolean }) {
 }
 
 // Cards pin into the category typed here; groups follow each category's first pin
-function PinnedItems({ icons }: { icons: boolean }) {
+function PinnedItems() {
   const pinning = useContext(PinsContext)!;
   const groups = groupPins(pinning.pins);
   return (
@@ -277,7 +273,6 @@ function PinnedItems({ icons }: { icons: boolean }) {
             <MarketItem
               key={pinKey(pin)}
               item={pin.data}
-              icons={icons}
               checkedAt={pinning.checkedAt}
               heading="h5"
             />
@@ -285,7 +280,6 @@ function PinnedItems({ icons }: { icons: boolean }) {
             <CraftItem
               key={pinKey(pin)}
               recipe={pin.data}
-              icons={icons}
               checkedAt={pinning.checkedAt}
               observedAt={pin.observedAt}
               attributionUrl={pin.attributionUrl}
@@ -332,39 +326,31 @@ function PinnedItems({ icons }: { icons: boolean }) {
   );
 }
 
-export function PricingData() {
+export function PricingData({ apiSettings }: { apiSettings?: ReactNode }) {
   const {
     data: items,
     error,
     checkedAt,
     retry,
   } = useMarketFeed(GATHER_URL, parseGatheringData);
-  const [showCoinIcons, setShowCoinIcons] = useState(true);
 
   return (
     <PinnedItemsProvider>
       <section className="experiments" aria-labelledby="gathering-heading">
         <header className="section-header">
           <h2 id="gathering-heading">AH Pricing Data</h2>
+          {apiSettings}
           <p className="section-subheading">
             Click item ID to jump to wowhead link of the item.
           </p>
           <p className="section-subheading">
             Live data repopulates and updates scan tags.
           </p>
-          <label className="coin-toggle">
-            <input
-              type="checkbox"
-              checked={showCoinIcons}
-              onChange={(event) => setShowCoinIcons(event.target.checked)}
-            />
-            Currency Icons
-          </label>
         </header>
-        <PinnedItems icons={showCoinIcons} />
-        <ItemLookup icons={showCoinIcons} />
+        <PinnedItems />
+        <ItemLookup />
         <div className="widget-grid">
-          <ProfessionCraftMargins icons={showCoinIcons} />
+          <ProfessionCraftMargins />
           <hr className="widget-divider" />
           <Widget
             title="Gathering Watchlist"
@@ -393,7 +379,6 @@ export function PricingData() {
               <MarketItem
                 key={item.id}
                 item={item}
-                icons={showCoinIcons}
                 checkedAt={checkedAt}
                 heading="h4"
               />

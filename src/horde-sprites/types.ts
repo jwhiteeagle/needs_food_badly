@@ -1,4 +1,5 @@
 import type { ItemReference, SetReference } from "../helper-modules";
+import type { CharacterClass } from "../identity-and-icons";
 
 // Public catalog contract. Workshop prompts, enchant cues and source images stay private
 export type SpriteCatalog = {
@@ -11,7 +12,7 @@ export type SpriteCatalog = {
     id: string;
     race: string;
     column: number;
-    characterClass: string;
+    characterClass: CharacterClass;
     set: SetReference;
     weapons: readonly ItemReference[];
   }[];

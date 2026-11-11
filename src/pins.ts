@@ -1,4 +1,5 @@
 import { AH_MARKET, parseGatheringData, type GatherItem } from "./market";
+import { ahLedgerFetch } from "./ahledger-client";
 import { craftingUrl, parseCraftingData, type CraftRecipe } from "./crafting";
 
 // v2 adds categories and drops the retired deals source; v1 entries are not migrated
@@ -142,7 +143,7 @@ export async function refreshPinnedItems(
   signal: AbortSignal,
 ): Promise<{ pins: PinnedItem[]; failed: boolean }> {
   async function get(url: string) {
-    const response = await fetch(url, {
+    const response = await ahLedgerFetch(url, {
       signal: AbortSignal.any([signal, AbortSignal.timeout(15000)]),
     });
     if (!response.ok) throw new Error("Pinned item refresh failed");

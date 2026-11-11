@@ -1,51 +1,22 @@
 import { useState } from "react";
 import { classicLink } from "./helper-modules";
+import {
+  characterClasses,
+  professions,
+  tierArtwork,
+  type CharacterClass,
+  type ProfessionName,
+} from "./identity-and-icons";
 import { classIdentities, tierOneIdentities } from "./horde-sprites/assets";
 import { dungeonOneIdentities } from "./horde-sprites/dungeon-one";
 import { dungeonTwoIdentities } from "./horde-sprites/dungeon-two";
 import { pvpEpicIdentities, pvpRareIdentities } from "./horde-sprites/pvp";
 import { tierThreeIdentities } from "./horde-sprites/tier-three";
 import type { SpriteCatalog } from "./horde-sprites/types";
-import warriorIcon from "./assets/wow/warrior.jpg" with { type: "file" };
-import hunterIcon from "./assets/wow/hunter.jpg" with { type: "file" };
-import rogueIcon from "./assets/wow/rogue.jpg" with { type: "file" };
-import shamanIcon from "./assets/wow/shaman.jpg" with { type: "file" };
-import warlockIcon from "./assets/wow/warlock.jpg" with { type: "file" };
-import mageIcon from "./assets/wow/mage.jpg" with { type: "file" };
-import priestIcon from "./assets/wow/priest.jpg" with { type: "file" };
-import paladinIcon from "./assets/wow/paladin.jpg" with { type: "file" };
-import druidIcon from "./assets/wow/druid.jpg" with { type: "file" };
-import dungeonOneArtwork from "./assets/wow/tiers/dungeon_set_1_artwork.webp" with { type: "file" };
-import dungeonTwoArtwork from "./assets/wow/tiers/dungeon_set_2_artwork.webp" with { type: "file" };
-import pvpRareArtwork from "./assets/wow/tiers/pvp_rare_artwork.webp" with { type: "file" };
-import pvpEpicArtwork from "./assets/wow/tiers/pvp_epic_artwork.webp" with { type: "file" };
-import raidOneArtwork from "./assets/wow/tiers/raid_tier_1_artwork.webp" with { type: "file" };
-import raidTwoArtwork from "./assets/wow/tiers/raid_tier_2_artwork.webp" with { type: "file" };
-import raidThreeArtwork from "./assets/wow/tiers/raid_tier_3_artwork.webp" with { type: "file" };
+import omarSprite from "./horde-sprites/dungeon_set_1/256/warrior_protection_tauren_dungeon_set_1_256.png" with { type: "file" };
+import karenSprite from "./horde-sprites/dungeon_set_2/256/warlock_undead_female_dungeon_set_2_256.png" with { type: "file" };
 
 const spriteSize = classIdentities.displaySize;
-const classIcons = {
-  Warrior: warriorIcon,
-  Hunter: hunterIcon,
-  Rogue: rogueIcon,
-  Shaman: shamanIcon,
-  Warlock: warlockIcon,
-  Mage: mageIcon,
-  Priest: priestIcon,
-  Paladin: paladinIcon,
-  Druid: druidIcon,
-};
-const classColors: Record<string, string> = {
-  Warrior: "#C79C6E",
-  Hunter: "#ABD473",
-  Rogue: "#FFF569",
-  Shaman: "#0070DE",
-  Warlock: "#9482C9",
-  Mage: "#69CCF0",
-  Priest: "#FFFFFF",
-  Paladin: "#F58CBA",
-  Druid: "#FF7D0A",
-};
 
 const spriteSets = [
   { id: "raid-tier-3", label: "Raid Tier 3", collection: tierThreeIdentities },
@@ -84,53 +55,6 @@ type GallerySprite = SpriteCatalog["items"][number] & {
   groupLabel: string;
 };
 
-// Framed journal art: https://wow.zamimg.com/images/wow/journal/ui-ej-lorebg-<location>.png
-// Alpha padding trimmed, whole frame resized to 256px square; PvP uses visual stand-ins
-const tierArtwork = {
-  "dungeon-tier-1": {
-    src: dungeonOneArtwork,
-    location: "Scholomance",
-    source: "scholomance",
-    fileDataId: 608254,
-  },
-  "dungeon-tier-2": {
-    src: dungeonTwoArtwork,
-    location: "Blackrock Depths",
-    source: "blackrockdepths",
-    fileDataId: 608235,
-  },
-  "pvp-rare": {
-    src: pvpRareArtwork,
-    location: "Dire Maul",
-    source: "diremaul",
-    fileDataId: 608239,
-  },
-  "pvp-epic": {
-    src: pvpEpicArtwork,
-    location: "Utgarde Pinnacle",
-    source: "utgardepinnacle",
-    fileDataId: 608266,
-  },
-  "raid-tier-1": {
-    src: raidOneArtwork,
-    location: "Molten Core",
-    source: "moltencore",
-    fileDataId: 1396505,
-  },
-  "raid-tier-2": {
-    src: raidTwoArtwork,
-    location: "Blackwing Lair",
-    source: "blackwinglair",
-    fileDataId: 1396499,
-  },
-  "raid-tier-3": {
-    src: raidThreeArtwork,
-    location: "Naxxramas",
-    source: "naxxramas",
-    fileDataId: 1396506,
-  },
-};
-
 function ShowAllIcon() {
   return (
     <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true">
@@ -145,69 +69,162 @@ function ShowAllIcon() {
   );
 }
 
-const classGroups = classIdentities.items.map(({ characterClass }) => ({
-  id: `class-${characterClass.toLowerCase()}`,
-  label: characterClass,
-  // Dungeon Tiers 1 and 2, PvP Rare, PvP Epic, then Raid Tiers 1, 2, and 3.
-  items: [...setGroups]
-    .reverse()
-    .flatMap(({ items }) =>
-      items.filter((item) => item.characterClass === characterClass),
-    ),
-}));
+const classGroups = (Object.keys(characterClasses) as CharacterClass[]).map(
+  (characterClass) => ({
+    id: `class-${characterClass.toLowerCase()}`,
+    label: characterClass,
+    // Dungeon Tiers 1 and 2, PvP Rare, PvP Epic, then Raid Tiers 1, 2, and 3.
+    items: [...setGroups]
+      .reverse()
+      .flatMap(({ items }) =>
+        items.filter((item) => item.characterClass === characterClass),
+      ),
+  }),
+);
 
-// Manual names, classes, and sets for the featured characters.
-// Keep this independent of reservations; repeated class sprites are intentional.
+type CharacterDisplay = {
+  displayName: string;
+  characterClass: CharacterClass;
+  setId: (typeof spriteSets)[number]["id"];
+  // Optional standalone variant; shared gallery atlases stay unchanged
+  spriteSrc?: string;
+  professions?:
+    | readonly []
+    | readonly [ProfessionName]
+    | readonly [ProfessionName, ProfessionName]
+    | readonly [ProfessionName, ProfessionName, ProfessionName]
+    | readonly [ProfessionName, ProfessionName, ProfessionName, ProfessionName];
+};
+
+// Manual character assignments; omit professions or use an empty list for none
 const characterDisplays = [
   {
     displayName: "Green Rogue",
     characterClass: "Rogue",
-    color: "#FFF569",
     setId: "dungeon-tier-1",
+    professions: ["Leatherworking", "Skinning", "Cooking"],
   },
   {
     displayName: "Gray Witch",
     characterClass: "Priest",
-    color: "#FFFFFF",
     setId: "raid-tier-2",
+    professions: ["Tailoring", "Enchanting"],
   },
   {
-    displayName: "Green Archer",
-    characterClass: "Hunter",
-    color: "#ABD473",
-    setId: "raid-tier-1",
+    displayName: "Omars Cominyall",
+    characterClass: "Warrior",
+    setId: "dungeon-tier-1",
+    spriteSrc: omarSprite,
+    professions: ["Mining", "Engineering"],
   },
   {
     displayName: "Pink Cavalier",
     characterClass: "Paladin",
-    color: "#F58CBA",
     setId: "raid-tier-2",
+    professions: ["Mining", "Blacksmithing", "Cooking", "Fishing"],
   },
   {
-    displayName: "Apoc Ulipse",
+    displayName: "Green Archer",
     characterClass: "Hunter",
-    color: "#ABD473",
+    setId: "raid-tier-1",
+    professions: ["Leatherworking", "Skinning"],
+  },
+  {
+    displayName: "Apoc Ulypse",
+    characterClass: "Hunter",
     setId: "raid-tier-2",
+    professions: ["Herbalism", "Alchemy", "Fishing"],
+  },
+  {
+    displayName: "Whacka Smacks",
+    characterClass: "Shaman",
+    setId: "raid-tier-1",
+    professions: ["Herbalism", "Alchemy", "Fishing"],
   },
   {
     displayName: "Trolger Allaboutcrit",
     characterClass: "Hunter",
-    color: "#ABD473",
     setId: "dungeon-tier-1",
+    professions: ["Leatherworking", "Skinning"],
+  },
+  {
+    displayName: "Excedrine Allaboutcrit",
+    characterClass: "Priest",
+    setId: "dungeon-tier-1",
+    professions: ["Tailoring", "Enchanting"],
   },
   {
     displayName: "Moo Zilal",
     characterClass: "Druid",
-    color: "#FF7D0A",
     setId: "raid-tier-2",
+    professions: ["Herbalism", "Alchemy", "Cooking", "Fishing"],
   },
   {
     displayName: "Nibcab Cabnib",
     characterClass: "Paladin",
-    color: "#F58CBA",
     setId: "raid-tier-1",
+    professions: ["Mining", "Blacksmithing"],
   },
-] as const;
+  {
+    displayName: "Aggressive Karen",
+    characterClass: "Warlock",
+    setId: "dungeon-tier-2",
+    spriteSrc: karenSprite,
+    professions: ["Herbalism", "Alchemy"],
+  },
+] as const satisfies readonly CharacterDisplay[];
+
+const classTallies = Object.entries(characterClasses).map(
+  ([name, { icon }]) => ({
+    name,
+    icon,
+    count: characterDisplays.filter(
+      (character) => character.characterClass === name,
+    ).length,
+  }),
+);
+
+// Derive coverage from member assignments; count each character once per profession
+const professionTallies = (Object.keys(professions) as ProfessionName[]).map(
+  (name) => ({
+    name,
+    icon: professions[name].icon,
+    count: characterDisplays.filter((character: CharacterDisplay) =>
+      character.professions?.some((profession) => profession === name),
+    ).length,
+  }),
+);
+
+const professionGroups = [
+  {
+    id: "crafting-professions",
+    label: "Crafting Professions",
+    items: professionTallies.filter(({ name }) =>
+      [
+        "Alchemy",
+        "Blacksmithing",
+        "Enchanting",
+        "Engineering",
+        "Leatherworking",
+        "Tailoring",
+      ].includes(name),
+    ),
+  },
+  {
+    id: "gathering-professions",
+    label: "Gathering Professions",
+    items: professionTallies.filter(({ name }) =>
+      ["Herbalism", "Skinning", "Mining"].includes(name),
+    ),
+  },
+  {
+    id: "secondary-professions",
+    label: "Secondary Professions",
+    items: professionTallies.filter(
+      ({ name }) => name === "Cooking" || name === "Fishing",
+    ),
+  },
+];
 
 // Manual class assignments, in the same order as the current tirekicker list.
 const tirekickerClasses = [
@@ -247,11 +264,7 @@ const styles = `
   }
   .horde-sprites__sprite {
     display: block;
-    width: ${spriteSize}px;
-    height: ${spriteSize}px;
     margin-inline: auto;
-    background-image: url("${classIdentities.src}");
-    background-size: ${spriteSize * classIdentities.columns}px ${spriteSize}px;
     background-repeat: no-repeat;
     image-rendering: pixelated;
   }
@@ -266,6 +279,63 @@ const styles = `
   .horde-sprites__caption strong {
     color: var(--foreground);
     font-size: 0.85rem;
+  }
+  .horde-sprites__professions {
+    display: flex;
+    justify-content: center;
+    gap: 0.3rem;
+    margin-block: 0.2rem;
+  }
+  .horde-sprites__professions img {
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: 0.15rem;
+  }
+  .horde-sprites__profession-summary {
+    margin-top: 1rem;
+  }
+  .horde-sprites__profession-divider {
+    width: min(100%, 30rem);
+    margin: 0 auto 1rem;
+    border: 0;
+    border-top: 1px solid var(--border);
+  }
+  .horde-sprites__profession-tally {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem 1rem;
+    list-style: none;
+    margin: 0.65rem 0 0;
+    padding: 0;
+  }
+  .horde-sprites__profession-tally li {
+    display: grid;
+    justify-items: center;
+    align-content: start;
+    gap: 0.25rem;
+    flex: 0 1 6rem;
+    text-align: center;
+    font-size: 0.85rem;
+  }
+  .horde-sprites__profession-count {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .horde-sprites__profession-count img {
+    width: 3rem;
+    height: 3rem;
+    border: 1px solid var(--border);
+    border-radius: 0.2rem;
+  }
+  .horde-sprites__profession-tally [data-unclaimed="true"] {
+    color: var(--muted);
+  }
+  .horde-sprites__profession-tally [data-unclaimed="true"] img {
+    filter: grayscale(1);
+    opacity: 0.4;
   }
   .horde-sprites__set-name {
     font-weight: 700;
@@ -301,6 +371,7 @@ const styles = `
     margin-top: 1.1rem;
   }
   .horde-sprites__main-heading,
+  .horde-sprites__professions-heading,
   .horde-sprites__tirekickers-heading {
     margin: 0 0 0.4rem;
     color: var(--foreground);
@@ -319,6 +390,34 @@ const styles = `
     font-size: 0.9rem;
     line-height: 1.3;
     text-wrap: balance;
+  }
+  .horde-sprites__class-tally {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem 1rem;
+    margin: 0 0 0.75rem;
+    padding: 0;
+    list-style: none;
+  }
+  .horde-sprites__class-tally li {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.9rem;
+  }
+  .horde-sprites__class-tally img {
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid var(--border);
+    border-radius: 0.15rem;
+  }
+  .horde-sprites__class-tally [data-unclaimed="true"] {
+    color: var(--muted);
+  }
+  .horde-sprites__class-tally [data-unclaimed="true"] img {
+    filter: grayscale(1);
+    opacity: 0.4;
   }
   .horde-sprites__tirekicker-lineup {
     gap: 0.25rem 0.5rem;
@@ -520,7 +619,9 @@ function SpriteLineup({
             <figure className="horde-sprites__figure">
               <Sprite column={column} atlas={atlas} columns={columns} />
               <figcaption className="horde-sprites__caption">
-                <strong style={{ color: classColors[characterClass] }}>
+                <strong
+                  style={{ color: characterClasses[characterClass].color }}
+                >
                   {byClass ? groupLabel : characterClass}
                 </strong>
                 {set.setId === null ? (
@@ -566,9 +667,10 @@ function SpriteLineup({
 function FeaturedCharacter({
   displayName,
   characterClass,
-  color,
   setId,
-}: (typeof characterDisplays)[number]) {
+  spriteSrc,
+  professions: characterProfessions = [],
+}: CharacterDisplay) {
   const sprite = setGroups
     .find(({ id }) => id === setId)
     ?.items.find((item) => item.characterClass === characterClass);
@@ -578,13 +680,30 @@ function FeaturedCharacter({
   return (
     <figure className="horde-sprites__figure">
       <Sprite
-        column={sprite.column}
-        atlas={sprite.atlas}
-        columns={sprite.columns}
+        column={spriteSrc ? 0 : sprite.column}
+        atlas={spriteSrc ?? sprite.atlas}
+        columns={spriteSrc ? 1 : sprite.columns}
       />
       <figcaption className="horde-sprites__caption">
-        <strong style={{ color }}>{displayName}</strong>
+        <strong style={{ color: characterClasses[characterClass].color }}>
+          {displayName}
+        </strong>
         <span>{"<Needs Food Badly>"}</span>
+        {characterProfessions.length > 0 && (
+          <span className="horde-sprites__professions">
+            {characterProfessions.map((profession) => (
+              <img
+                key={profession}
+                src={professions[profession].icon}
+                alt={profession}
+                title={profession}
+                width="24"
+                height="24"
+                loading="lazy"
+              />
+            ))}
+          </span>
+        )}
       </figcaption>
     </figure>
   );
@@ -616,6 +735,17 @@ export function HordeSprites() {
         </em>
       </p>
       <ul
+        className="horde-sprites__class-tally"
+        aria-label="Active member class representation"
+      >
+        {classTallies.map(({ name, icon, count }) => (
+          <li key={name} data-unclaimed={count === 0} title={name}>
+            <img src={icon} alt={name} width="32" height="32" />
+            <span aria-label={`${count} active members`}>x{count}</span>
+          </li>
+        ))}
+      </ul>
+      <ul
         className="horde-sprites__lineup"
         aria-labelledby="main-characters-heading"
       >
@@ -625,6 +755,40 @@ export function HordeSprites() {
           </li>
         ))}
       </ul>
+      {professionGroups.map(({ id, label, items }) => (
+        <section
+          key={id}
+          className="horde-sprites__profession-summary"
+          aria-labelledby={`${id}-heading`}
+        >
+          {id !== "crafting-professions" && (
+            <hr className="horde-sprites__profession-divider" />
+          )}
+          <h2
+            id={`${id}-heading`}
+            className="horde-sprites__professions-heading"
+          >
+            {label}
+          </h2>
+          <ul className="horde-sprites__profession-tally">
+            {items.map(({ name, icon, count }) => (
+              <li key={name} data-unclaimed={count === 0}>
+                <span className="horde-sprites__profession-count">
+                  <img
+                    src={icon}
+                    alt=""
+                    width="48"
+                    height="48"
+                    loading="lazy"
+                  />
+                  <span aria-label={`${count} characters`}>x{count}</span>
+                </span>
+                <span>{name}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
       <section
         className="horde-sprites__tirekickers"
         aria-labelledby="tirekickers-sprites-heading"
@@ -667,7 +831,6 @@ export function HordeSprites() {
         <p className="horde-sprites__gallery-description">
           Custom sprites, sortable by Class or Tier.
         </p>
-        <h2></h2>
         <p className="horde-sprites__gallery-description">
           All sprites have clickable wowhead links for their displayed sets and
           weapons.
@@ -711,7 +874,7 @@ export function HordeSprites() {
                     onClick={() => setSelectedClass(id)}
                   >
                     <img
-                      src={classIcons[label]}
+                      src={characterClasses[label].icon}
                       alt=""
                       width="28"
                       height="28"

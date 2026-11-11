@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { VoicePlayback } from "./voice-playback";
 import { HordeSprites } from "./horde-sprites";
 import { PricingData } from "./market-ui/price-watch";
+import { AhLedgerSettings } from "./ahledger-client";
 
 // GitHub mark (Octicons mark-github, 16px grid)
 const githubMark =
@@ -26,7 +27,7 @@ function App() {
       <VoicePlayback>
         <HordeSprites />
       </VoicePlayback>
-      <PricingData />
+      <PricingData apiSettings={<AhLedgerSettings />} />
     </main>
   );
 }

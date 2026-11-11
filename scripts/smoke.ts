@@ -13,6 +13,7 @@ assert.equal(
 const spriteFiles = [
   ...new Bun.Glob("*.png").scanSync(resolve(import.meta.dir, "../dist")),
 ];
+const atlasFiles = spriteFiles.filter((name) => name.startsWith("lineup_"));
 const tierArtworkFiles = [
   ...new Bun.Glob("*_artwork-*.webp").scanSync(
     resolve(import.meta.dir, "../dist"),
@@ -20,12 +21,12 @@ const tierArtworkFiles = [
 ];
 assert.equal(tierArtworkFiles.length, 7, "Expected seven framed tier artworks");
 assert.equal(
-  spriteFiles.length,
+  atlasFiles.length,
   7,
   "Expected two dungeon, three raid, and two Horde PvP class identity atlases",
 );
 const spriteDimensions = await Promise.all(
-  spriteFiles.map(async (name) => {
+  atlasFiles.map(async (name) => {
     const bytes = await Bun.file(resolve(import.meta.dir, "../dist", name))
       .slice(0, 24)
       .arrayBuffer();
