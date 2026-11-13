@@ -160,6 +160,12 @@ const characterDisplays = [
     professions: ["Herbalism", "Alchemy", "Cooking", "Fishing"],
   },
   {
+    displayName: "Sar Rotting",
+    characterClass: "Paladin",
+    setId: "dungeon-tier-1",
+    professions: ["Tailoring", "Enchanting"],
+  },
+  {
     displayName: "Nibcab Cabnib",
     characterClass: "Paladin",
     setId: "raid-tier-1",
